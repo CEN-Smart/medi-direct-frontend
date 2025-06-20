@@ -11,7 +11,7 @@ export default function HomePage() {
       <Header />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-50 to-green-50 py-16">
+      <section className="bg-linear-to-br from-blue-50 to-green-50 py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">

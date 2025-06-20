@@ -10,7 +10,7 @@ export function Header() {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <header className="bg-white shadow-sm border-b">
+    <header className="bg-white shadow-xs border-b">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}

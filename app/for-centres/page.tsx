@@ -89,7 +89,7 @@ export default function ForCentresPage() {
       <Header />
 
       {/* Hero Section */}
-      <section ref={heroRef} className="bg-gradient-to-br from-green-50 to-blue-50 py-20">
+      <section ref={heroRef} className="bg-linear-to-br from-green-50 to-blue-50 py-20">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
