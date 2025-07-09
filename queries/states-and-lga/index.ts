@@ -32,7 +32,7 @@ export const useAllStates = (
     });
 };
 
-// Fetch a single state or LGA by ID
+// Fetch LGAs by state
 const fetchLgaByState = async (
     state: string,
 ): Promise<AllStatesAndLgaResponse> => {
