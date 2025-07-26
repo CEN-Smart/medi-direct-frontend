@@ -20,6 +20,7 @@ import { allKeysToValidate, serviceTypeKeys } from '../keys';
 const fetchAllServiceTypes = async (): Promise<AllServiceTypesResponse> => {
     const response = await apiClient.get({
         url: '/service-types',
+        auth: false, // Assuming this endpoint does not require authentication
     });
     return response;
 };
@@ -49,6 +50,7 @@ const fetchServiceTypeById = async (
 ): Promise<SingleServiceTypeResponse> => {
     const response = await apiClient.get({
         url: `/service-types/${id}`,
+        auth: false,
     });
     return response;
 };
