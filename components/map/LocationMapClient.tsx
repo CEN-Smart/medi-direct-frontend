@@ -3,16 +3,17 @@
 import { useEffect, useRef } from 'react';
 
 import { cn } from '@/lib/utils';
-import L from 'leaflet';
-import marker2xn from 'leaflet/dist/images/marker-icon-2x.png';
-import markerIcon from 'leaflet/dist/images/marker-icon.png';
-import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
+import L, { icon } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-L.Icon.Default.mergeOptions({
-    iconRetinaUrl: marker2xn,
-    iconUrl: markerIcon,
-    shadowUrl: shadowUrl,
+const ICON = icon({
+    iconUrl: '/map-marker.gif',
+    iconSize: [64, 64],
+    iconAnchor: [32, 64],
+    popupAnchor: [1, -55],
+    shadowUrl: '/map-marker-shadow.gif',
+    shadowSize: [64, 64],
+    shadowAnchor: [32, 64],
 });
 
 interface LocationMapClientProps {
@@ -40,7 +41,9 @@ export function LocationMapClient({
             attribution:
                 '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         }).addTo(map);
-        const marker = L.marker([latitude, longitude]).addTo(map);
+        const marker = L.marker([latitude, longitude], { icon: ICON }).addTo(
+            map,
+        );
 
         marker.bindPopup(name.toUpperCase()).openPopup();
 
