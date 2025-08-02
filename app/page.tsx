@@ -1,38 +1,72 @@
-import { Suspense } from "react"
-import { SearchSection } from "@/components/search-section"
-import { FeaturedCentres } from "@/components/featured-centres"
-import { HowItWorks } from "@/components/how-it-works"
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
+import { Metadata } from 'next';
 
-export default function HomePage() {
-  return (
-    <div className="min-h-screen bg-white">
-      <Header />
+import { Home } from '@/components/home';
 
-      {/* Hero Section */}
-      <section className="bg-linear-to-br from-blue-50 to-green-50 py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-              Find Diagnostic Services
-              <span className="text-blue-600"> Near You</span>
-            </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Connect with verified diagnostic centres across Lagos. Compare prices, read reviews, and book appointments
-              instantly.
-            </p>
-          </div>
+export const metadata: Metadata = {
+    title: 'Medi Direct',
+    description:
+        'Medi Direct is a platform that connects patients with healthcare providers, offering a seamless experience for booking appointments, accessing medical records, and managing health information.',
+    keywords: [
+        'Medi Direct',
+        'healthcare',
+        'tele medicine',
+        'patient support',
+        'medical records',
+        'appointment booking',
+        'health management',
+        'healthcare technology',
+        'patient care',
+        'health services',
+        'healthcare solutions',
+        'digital health',
+        'healthcare platform',
+        'healthcare app',
+        'healthcare innovation',
+        'patient engagement',
+        'healthcare accessibility',
+        'health equity',
+        'health disparities',
+    ],
+    authors: [
+        {
+            name: 'Medi Direct Team',
+            url: 'https://medidirect.org',
+        },
+    ],
+    creator: 'Medi Direct Team',
+    openGraph: {
+        title: 'Medi Direct',
+        description:
+            'Medi Direct is a platform that connects patients with healthcare providers, offering a seamless experience for booking appointments, accessing medical records, and managing health information.',
+        url: 'https://medidirect.org',
+        siteName: 'Medi Direct',
+        images: [
+            {
+                url: 'https://res.cloudinary.com/dkvxi5iws/image/upload/v1751829214/logo_putfge.jpg', // Adjusted to use relative path
+                width: 1200,
+                height: 630,
+                alt: 'Medi Direct Logo',
+            },
+        ],
+        locale: 'en_US',
+        type: 'website',
+    },
+    twitter: {
+        images: [
+            {
+                url: 'https://res.cloudinary.com/dkvxi5iws/image/upload/v1751829214/logo_putfge.jpg', // Adjusted to use relative path
+                width: 1200,
+                height: 630,
+                alt: 'Medi Direct OG Image',
+            },
+        ],
+        card: 'summary_large_image',
+        title: 'Medi Direct',
+    },
+};
 
-          <Suspense fallback={<div>Loading search...</div>}>
-            <SearchSection />
-          </Suspense>
-        </div>
-      </section>
+const HomePage = () => {
+    return <Home />;
+};
 
-      <HowItWorks />
-      <FeaturedCentres />
-      <Footer />
-    </div>
-  )
-}
+export default HomePage;

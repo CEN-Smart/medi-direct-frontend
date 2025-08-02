@@ -1,262 +1,342 @@
 'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
-import {
-	Dialog,
-	DialogContent,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, Clock, MapPin, Phone, Shield, Star } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+import { LocationMap } from '@/components/map/LocationMap';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { animations } from '@/lib/animations';
+import { useSingleSearchedCenter } from '@/queries/search-centres/search-centres';
+import { SearchedCentersResponse } from '@/types/guest';
+import { format } from 'date-fns';
+import { Calendar, Clock, MapPin, Phone, Shield, Star } from 'lucide-react';
 
-interface Centre {
-	id: number;
-	name: string;
-	location: string;
-	rating: number;
-	reviewCount: number;
-	phone: string;
-	services: string[];
-	priceRange: string;
-	openHours: string;
-	image: string;
-	verified: boolean;
-}
+import { GuestBookingModal } from './guest-booking-modal';
+import { NoDataFound } from './ui/no-data-found';
+import { Skeleton } from './ui/skeleton';
 
 interface CentreDetailsModalProps {
-	centre: Centre | null;
-	isOpen: boolean;
-	onClose: () => void;
-	onBook: (centre: Centre) => void;
-	children?: React.ReactNode;
+    centre: SearchedCentersResponse['data']['centres'][number] | undefined;
+    children?: React.ReactNode;
 }
 
-const mockServices = [
-	{ name: 'Blood Test (Full Panel)', price: 15000, duration: '15 mins' },
-	{ name: 'X-Ray Chest', price: 8000, duration: '10 mins' },
-	{ name: 'ECG', price: 5000, duration: '15 mins' },
-	{ name: 'Ultrasound Abdomen', price: 12000, duration: '30 mins' },
-];
-
-const mockReviews = [
-	{
-		id: 1,
-		name: 'Adebayo Johnson',
-		rating: 5,
-		comment:
-			'Excellent service and very professional staff. Highly recommended!',
-		date: '2024-01-10',
-	},
-	{
-		id: 2,
-		name: 'Funmi Adebayo',
-		rating: 4,
-		comment: 'Good facilities and quick service. Will definitely come back.',
-		date: '2024-01-08',
-	},
-];
-
 export function CentreDetailsModal({
-	centre,
-	isOpen,
-	onClose,
-	onBook,
-	children,
+    centre,
+    children,
 }: CentreDetailsModalProps) {
-	const [activeTab, setActiveTab] = useState('services');
+    const [isOpen, setIsOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState('services');
 
-	useEffect(() => {
-		if (isOpen && centre) {
-			// Animate modal content
-			const modalContent = document.querySelector('.modal-content');
-			if (modalContent) {
-				animations.pageEnter(modalContent);
-			}
-		}
-	}, [isOpen, centre]);
+    const {
+        data: centerData,
+        isError: isCentreError,
+        error: centerError,
+        isPending: isCentrePending,
+    } = useSingleSearchedCenter(centre?.id ?? 0);
 
-	if (!centre) return null;
+    useEffect(() => {
+        if (isOpen && centre) {
+            // Animate modal content
+            const modalContent = document.querySelector('.modal-content');
+            if (modalContent) {
+                animations.pageEnter(modalContent);
+            }
+        }
+    }, [isOpen, centre]);
 
-	return (
-		<Dialog
-			open={isOpen}
-			onOpenChange={onClose}>
-			<DialogTrigger asChild>{children}</DialogTrigger>
-			<DialogContent className='max-w-4xl max-h-[90vh] overflow-y-auto modal-content'>
-				<DialogHeader>
-					<DialogTitle className='flex items-center gap-2'>
-						{centre.name}
-						{centre.verified && (
-							<Badge className='bg-green-100 text-green-800'>Verified</Badge>
-						)}
-					</DialogTitle>
-				</DialogHeader>
+    return (
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+                {children || (
+                    <Button variant="outline" onClick={() => setIsOpen(true)}>
+                        View Details
+                    </Button>
+                )}
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-4xl z-[10000] overflow-y-auto modal-content px-0">
+                <DialogHeader className="px-6">
+                    <DialogTitle className="flex items-center gap-2">
+                        <span className="capitalize">{centre?.name}</span>
+                        {centre?.status === 'VERIFIED' && (
+                            <Badge className="bg-green-100 text-green-800">
+                                Verified
+                            </Badge>
+                        )}
+                    </DialogTitle>
+                </DialogHeader>
 
-				<div className='gap-6 grid grid-cols-1 lg:grid-cols-3'>
-					{/* Image and Basic Info */}
-					<div className='lg:col-span-1'>
-						<img
-							src={centre.image || '/placeholder.svg'}
-							alt={centre.name}
-							className='mb-4 rounded-lg w-full h-48 object-cover'
-						/>
+                <div className="gap-6 grid grid-cols-1 lg:grid-cols-3 max-h-[80vh] overflow-y-auto px-6 pt-4">
+                    {/* Image and Basic Info */}
+                    <div className="lg:col-span-1">
+                        <LocationMap
+                            latitude={Number(centre?.latitude)}
+                            longitude={Number(centre?.longitude)}
+                            name={centre?.name || 'Centre Location'}
+                            className="mb-4 rounded-lg w-full h-48 border border-gray-200"
+                        />
 
-						<div className='space-y-3'>
-							<div className='flex items-center gap-2'>
-								<Star className='fill-yellow-400 w-4 h-4 text-yellow-400' />
-								<span className='font-medium'>{centre.rating}</span>
-								<span className='text-gray-500'>
-									({centre.reviewCount} reviews)
-								</span>
-							</div>
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-2">
+                                <Star className="fill-yellow-400 w-4 h-4 text-yellow-400" />
+                                <span className="font-medium">
+                                    {centre?.averageRating.toFixed(1)}
+                                </span>
+                                <span className="text-gray-500">
+                                    ({centre?.reviewsCount} reviews)
+                                </span>
+                            </div>
 
-							<div className='flex items-center gap-2 text-gray-600'>
-								<MapPin className='w-4 h-4' />
-								<span>{centre.location}</span>
-							</div>
+                            <div className="flex items-start gap-2 text-gray-600 capitalize">
+                                <MapPin className="w-4 h-4 shrink-0" />
+                                <span>
+                                    {centre?.address} - {centre?.state},{' '}
+                                    {centre?.lga}
+                                </span>
+                            </div>
 
-							<div className='flex items-center gap-2 text-gray-600'>
-								<Phone className='w-4 h-4' />
-								<span>{centre.phone}</span>
-							</div>
+                            <div className="flex items-center gap-2 text-gray-600">
+                                <Phone className="w-4 h-4" />
+                                <span>{centre?.phone}</span>
+                            </div>
 
-							<div className='flex items-center gap-2 text-gray-600'>
-								<Clock className='w-4 h-4' />
-								<span>{centre.openHours}</span>
-							</div>
-						</div>
+                            <div className=" text-gray-600">
+                                <div>
+                                    {centre?.operatingHours.map((hour) => (
+                                        <div
+                                            key={hour.day}
+                                            className="flex items-center gap-2"
+                                        >
+                                            <Clock className="w-4 h-4" />
+                                            <span className="flex items-center gap-1 w-full justify-between">
+                                                <span className="font-semibold">
+                                                    {hour.day}:
+                                                </span>{' '}
+                                                <span>
+                                                    {hour.from} - {hour.to}
+                                                </span>
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
 
-						<Button
-							className='bg-blue-600 hover:bg-blue-700 mt-6 w-full'
-							onClick={() => onBook(centre)}>
-							<Calendar className='mr-2 w-4 h-4' />
-							Book Appointment
-						</Button>
-					</div>
+                        <GuestBookingModal centre={centre}>
+                            <Button className="bg-blue-600 hover:bg-blue-700 mt-6 w-full">
+                                <Calendar className="mr-2 w-4 h-4" />
+                                Book Appointment
+                            </Button>
+                        </GuestBookingModal>
+                    </div>
 
-					{/* Detailed Information */}
-					<div className='lg:col-span-2'>
-						<Tabs
-							value={activeTab}
-							onValueChange={setActiveTab}>
-							<TabsList className='grid grid-cols-3 w-full'>
-								<TabsTrigger value='services'>Services & Prices</TabsTrigger>
-								<TabsTrigger value='reviews'>Reviews</TabsTrigger>
-								<TabsTrigger value='info'>Information</TabsTrigger>
-							</TabsList>
+                    {/* Detailed Information */}
+                    <div className="lg:col-span-2">
+                        <Tabs value={activeTab} onValueChange={setActiveTab}>
+                            <TabsList className="grid grid-cols-3 w-full">
+                                <TabsTrigger value="services">
+                                    Services & Prices
+                                </TabsTrigger>
+                                <TabsTrigger value="reviews">
+                                    Reviews
+                                </TabsTrigger>
+                                <TabsTrigger value="info">
+                                    Information
+                                </TabsTrigger>
+                            </TabsList>
 
-							<TabsContent
-								value='services'
-								className='space-y-4'>
-								<h3 className='mb-4 font-semibold text-lg'>
-									Available Services
-								</h3>
-								{mockServices.map((service, index) => (
-									<Card key={index}>
-										<CardContent className='p-4'>
-											<div className='flex justify-between items-center'>
-												<div>
-													<h4 className='font-medium'>{service.name}</h4>
-													<p className='text-gray-500 text-sm'>
-														Duration: {service.duration}
-													</p>
-												</div>
-												<div className='text-right'>
-													<p className='font-semibold text-green-600'>
-														₦{service.price.toLocaleString()}
-													</p>
-													<Button
-														size='sm'
-														variant='outline'>
-														Select
-													</Button>
-												</div>
-											</div>
-										</CardContent>
-									</Card>
-								))}
-							</TabsContent>
+                            <TabsContent value="services" className="space-y-4">
+                                <h3 className="mb-4 font-semibold text-lg">
+                                    Available Services (
+                                    {centerData?.data.centre.services.length})
+                                </h3>
+                                {isCentrePending ? (
+                                    <div className="space-y-4">
+                                        <Skeleton className="h-6 w-1/3" />
+                                        <Skeleton className="h-6 w-full" />
+                                        <Skeleton className="h-6 w-full" />
+                                        <Skeleton className="h-6 w-full" />
+                                    </div>
+                                ) : isCentreError ? (
+                                    <p>
+                                        Error loading services:{' '}
+                                        {centerError.message}
+                                    </p>
+                                ) : centerData?.data.centre.services.length ===
+                                  0 ? (
+                                    <NoDataFound message="No services available for this centre." />
+                                ) : (
+                                    centerData?.data.centre.services.map(
+                                        (service, index) => (
+                                            <Card key={index}>
+                                                <CardContent className="p-4">
+                                                    <div className="flex justify-between items-center">
+                                                        <div>
+                                                            <h4 className="font-medium capitalize">
+                                                                {
+                                                                    service.serviceName
+                                                                }
+                                                            </h4>
+                                                            <p className="text-gray-500 text-sm">
+                                                                Duration:{' '}
+                                                                {
+                                                                    service.timeDuration
+                                                                }
+                                                            </p>
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <p className="font-semibold text-green-600">
+                                                                ₦
+                                                                {Number(
+                                                                    service.price,
+                                                                ).toLocaleString()}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        ),
+                                    )
+                                )}
+                            </TabsContent>
 
-							<TabsContent
-								value='reviews'
-								className='space-y-4'>
-								<h3 className='mb-4 font-semibold text-lg'>Patient Reviews</h3>
-								{mockReviews.map(review => (
-									<Card key={review.id}>
-										<CardContent className='p-4'>
-											<div className='flex justify-between items-start mb-2'>
-												<div>
-													<p className='font-medium'>{review.name}</p>
-													<div className='flex items-center gap-1'>
-														{[...Array(review.rating)].map((_, i) => (
-															<Star
-																key={i}
-																className='fill-yellow-400 w-4 h-4 text-yellow-400'
-															/>
-														))}
-													</div>
-												</div>
-												<span className='text-gray-500 text-sm'>
-													{review.date}
-												</span>
-											</div>
-											<p className='text-gray-600'>{review.comment}</p>
-										</CardContent>
-									</Card>
-								))}
-							</TabsContent>
+                            <TabsContent value="reviews" className="space-y-4">
+                                <h3 className="mb-4 font-semibold text-lg">
+                                    Patient Reviews
+                                </h3>
+                                {isCentrePending ? (
+                                    <div className="space-y-4">
+                                        <Skeleton className="h-6 w-1/3" />
+                                        <Skeleton className="h-6 w-full" />
+                                        <Skeleton className="h-6 w-full" />
+                                    </div>
+                                ) : isCentreError ? (
+                                    <p>
+                                        Error loading reviews:{' '}
+                                        {centerError.message}
+                                    </p>
+                                ) : centerData?.data.centre.reviews.length ===
+                                  0 ? (
+                                    <NoDataFound message="No reviews available for this centre." />
+                                ) : (
+                                    centerData?.data.centre.reviews.map(
+                                        (review) => (
+                                            <Card key={review.id}>
+                                                <CardContent className="p-4">
+                                                    <div className="flex justify-between items-start mb-2">
+                                                        <div>
+                                                            <p className="font-medium capitalize">
+                                                                {review.guestName
+                                                                    ? review.guestName
+                                                                    : 'Anonymous'}
+                                                            </p>
+                                                            <div className="flex items-center gap-1">
+                                                                {[
+                                                                    ...Array(
+                                                                        review.rating,
+                                                                    ),
+                                                                ].map(
+                                                                    (_, i) => (
+                                                                        <Star
+                                                                            key={
+                                                                                i
+                                                                            }
+                                                                            className="fill-yellow-400 w-4 h-4 text-yellow-400"
+                                                                        />
+                                                                    ),
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                        <span className="text-gray-500 text-sm">
+                                                            {format(
+                                                                review.createdAt,
+                                                                'MMMM dd, yyyy, HH:mm:ss',
+                                                            )}
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-gray-600">
+                                                        {
+                                                            review.reviewDescription
+                                                        }
+                                                    </p>
+                                                </CardContent>
+                                            </Card>
+                                        ),
+                                    )
+                                )}
+                            </TabsContent>
 
-							<TabsContent
-								value='info'
-								className='space-y-4'>
-								<h3 className='mb-4 font-semibold text-lg'>
-									Centre Information
-								</h3>
-								<div className='space-y-4'>
-									<div>
-										<h4 className='mb-2 font-medium'>About</h4>
-										<p className='text-gray-600'>
-											{centre.name} is a leading diagnostic centre providing
-											comprehensive healthcare services with state-of-the-art
-											equipment and experienced medical professionals.
-										</p>
-									</div>
+                            <TabsContent value="info" className="space-y-4">
+                                <h3 className="mb-4 font-semibold text-lg">
+                                    Centre Information
+                                </h3>
+                                <div className="space-y-4">
+                                    <div>
+                                        <h4 className="mb-2 font-medium">
+                                            About:
+                                        </h4>
+                                        <p className="text-gray-600">
+                                            <span>{centre?.description}</span>
+                                        </p>
+                                    </div>
 
-									<div>
-										<h4 className='mb-2 font-medium'>Specialties</h4>
-										<div className='flex flex-wrap gap-2'>
-											{centre.services.map(service => (
-												<Badge
-													key={service}
-													variant='secondary'>
-													{service}
-												</Badge>
-											))}
-										</div>
-									</div>
+                                    <div>
+                                        <h4 className="mb-2 font-medium">
+                                            Specialties:
+                                        </h4>
+                                        <div className="flex flex-wrap gap-2 capitalize">
+                                            {centre &&
+                                            centre?.services?.length > 0 ? (
+                                                centre?.services.map(
+                                                    (service) => (
+                                                        <Badge
+                                                            key={service.id}
+                                                            variant="secondary"
+                                                        >
+                                                            {
+                                                                service.serviceName
+                                                            }
+                                                        </Badge>
+                                                    ),
+                                                )
+                                            ) : (
+                                                <span className="text-gray-500">
+                                                    No specialties listed
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
 
-									<div>
-										<h4 className='mb-2 font-medium'>Certifications</h4>
-										<div className='flex items-center gap-2'>
-											<Shield className='w-4 h-4 text-green-600' />
-											<span className='text-gray-600 text-sm'>
-												Licensed by Lagos State Ministry of Health
-											</span>
-										</div>
-									</div>
-								</div>
-							</TabsContent>
-						</Tabs>
-					</div>
-				</div>
-			</DialogContent>
-		</Dialog>
-	);
+                                    <div>
+                                        <h4 className="mb-2 font-medium">
+                                            Certifications
+                                        </h4>
+                                        <div className="flex items-center gap-2">
+                                            {centerData?.data.centre.status ===
+                                                'VERIFIED' && (
+                                                <div className="flex items-center gap-1">
+                                                    <Shield className="w-4 h-4 text-green-600" />
+                                                    <span className="text-gray-600 text-sm">
+                                                        Licensed
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </TabsContent>
+                        </Tabs>
+                    </div>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
 }

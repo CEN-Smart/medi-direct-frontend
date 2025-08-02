@@ -1,248 +1,280 @@
 'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
-import {
-	Clock,
-	Filter,
-	MapPin,
-	MessageSquare,
-	Phone,
-	Star,
-} from 'lucide-react';
-
-import { CentreDetailsModal } from '@/components/centre-details-modal';
-import { GuestBookingModal } from '@/components/guest-booking-modal';
-import { GuestReviewModal } from '@/components/guest-review-modal';
-import { Header } from '@/components/header';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
-// Mock data - replace with API calls
-const mockCentres = [
-	{
-		id: 1,
-		name: 'Lagos Diagnostic Centre',
-		location: 'Ikeja, Lagos',
-		rating: 4.5,
-		reviewCount: 128,
-		phone: '+234 801 234 5678',
-		services: ['Blood Test', 'X-Ray', 'ECG', 'Ultrasound'],
-		priceRange: '₦5,000 - ₦50,000',
-		openHours: '8:00 AM - 6:00 PM',
-		image: '/placeholder.svg?height=200&width=300',
-		verified: true,
-	},
-	{
-		id: 2,
-		name: 'MedScan Imaging Centre',
-		location: 'Victoria Island, Lagos',
-		rating: 4.8,
-		reviewCount: 89,
-		phone: '+234 802 345 6789',
-		services: ['MRI', 'CT Scan', 'Mammography', 'X-Ray'],
-		priceRange: '₦15,000 - ₦150,000',
-		openHours: '7:00 AM - 8:00 PM',
-		image: '/placeholder.svg?height=200&width=300',
-		verified: true,
-	},
-	{
-		id: 3,
-		name: 'HealthCheck Diagnostics',
-		location: 'Surulere, Lagos',
-		rating: 4.2,
-		reviewCount: 67,
-		phone: '+234 803 456 7890',
-		services: ['Blood Test', 'Urine Test', 'ECG', 'Stress Test'],
-		priceRange: '₦3,000 - ₦25,000',
-		openHours: '9:00 AM - 5:00 PM',
-		image: '/placeholder.svg?height=200&width=300',
-		verified: false,
-	},
-];
+import { Header } from '@/components/header';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { ratings } from '@/docs';
+import { useSearchedCenters } from '@/queries/search-centres/search-centres';
+import { useAllServiceTypes } from '@/queries/service-types';
+import { useAllStates, useLgaByState } from '@/queries/states-and-lga';
+import { useGuestSearchStore } from '@/stores/guest-search';
+import { Filter } from 'lucide-react';
+
+import { SearchedCenterCard } from '../diagnostic-center/searched-center-card';
+import { Pagination } from '../pagination';
+import { Button } from '../ui/button';
+import { NoDataFound } from '../ui/no-data-found';
+import { Skeleton } from '../ui/skeleton';
 
 export function GuestSearchPage() {
-	const searchParams = useSearchParams();
-	const [centres, setCentres] = useState(mockCentres);
-	const [filters, setFilters] = useState({
-		testType: searchParams.get('test') || '',
-		location: searchParams.get('location') || '',
-		date: searchParams.get('date') || '',
-	});
+    const [pageNumber, setPageNumber] = useState(1);
+    const [pageSize] = useState(5);
+    const {
+        state,
+        setState,
+        serviceType,
+        setServiceType,
+        lga,
+        setLga,
+        rating,
+        setRating,
+        clearAllSearchFilters,
+    } = useGuestSearchStore();
+    const {
+        data: serviceTypes,
+        isPending: pendingServices,
+        isError: isServiceError,
+        error: errorService,
+    } = useAllServiceTypes();
+    const {
+        data: statesData,
+        isPending: pendingStates,
+        isError: isStateError,
+        error: errorState,
+    } = useAllStates();
+    const {
+        data: lgaData,
+        isPending: pendingLGA,
+        isError: isLGAError,
+        error: errorLGA,
+    } = useLgaByState(state);
 
-	const [selectedCentre, setSelectedCentre] = useState<any>(null);
-	const [guestBookingCentre, setGuestBookingCentre] = useState<any>(null);
-	const [reviewCentre, setReviewCentre] = useState<any>(null);
+    const {
+        data: centres,
+        isPending: pendingCentres,
+        isError: isCentresError,
+        error: errorCentres,
+    } = useSearchedCenters(
+        pageNumber,
+        pageSize,
+        serviceType,
+        state,
+        lga,
+        rating,
+    );
 
-	const handleReviewSubmit = (reviewData: any) => {
-		console.log('Review submitted:', reviewData);
-		setReviewCentre(null);
-		// Show success message or handle review submission
-	};
+    return (
+        <div className="bg-gray-50 min-h-screen">
+            <Header />
 
-	return (
-		<div className='bg-gray-50 min-h-screen'>
-			<Header />
+            <div className="mx-auto px-4 py-8 container">
+                <div className="mb-8">
+                    <h1 className="mb-2 font-bold text-gray-900 text-3xl flex items-center gap-2">
+                        Diagnostic Centres
+                    </h1>
+                    {pendingCentres ? (
+                        <Skeleton className="h-6 w-64 bg-gray-200" />
+                    ) : isCentresError ? (
+                        <p className="text-red-500">{errorCentres.message}</p>
+                    ) : (
+                        <p className="text-gray-600">
+                            {`${centres?.total && centres.total > 0 ? centres.total : 0} results found`}
+                            {state && ` in ${state}`}
+                            {serviceType && ` for ${serviceType}`}
+                        </p>
+                    )}
+                </div>
 
-			<div className='mx-auto px-4 py-8 container'>
-				<div className='mb-8'>
-					<h1 className='mb-2 font-bold text-gray-900 text-3xl'>
-						Diagnostic Centres
-					</h1>
-					<p className='text-gray-600'>
-						{centres.length} centres found
-						{filters.location && ` in ${filters.location}`}
-						{filters.testType && ` for ${filters.testType}`}
-					</p>
-				</div>
+                <div className="gap-6 grid grid-cols-1 lg:grid-cols-4">
+                    {/* Filters Sidebar */}
+                    <div className="lg:col-span-1">
+                        <Card className="w-full max-w-full mx-auto shadow-lg px-2 sm:px-4">
+                            <CardContent className="px-1 py-2 sm:px-4 sm:py-3">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <Filter className="w-5 h-5" />
+                                    <h3 className="font-semibold">Filters</h3>
+                                </div>
 
-				<div className='gap-8 grid grid-cols-1 lg:grid-cols-4'>
-					{/* Filters Sidebar */}
-					<div className='lg:col-span-1'>
-						<Card>
-							<CardContent className='p-6'>
-								<div className='flex items-center gap-2 mb-4'>
-									<Filter className='w-5 h-5' />
-									<h3 className='font-semibold'>Filters</h3>
-								</div>
-								{/* Add filter components here */}
-								<p className='text-gray-600 text-sm'>
-									Filter options coming soon...
-								</p>
-							</CardContent>
-						</Card>
-					</div>
+                                <div className="grid grid-cols-1 gap-4">
+                                    <div className="space-y-1">
+                                        <label className="text-sm font-medium text-gray-700">
+                                            Test Type
+                                        </label>
+                                        {isServiceError && (
+                                            <p className="text-red-500 text-sm">
+                                                {errorService.message}
+                                            </p>
+                                        )}
+                                        <Select
+                                            value={serviceType}
+                                            disabled={pendingServices}
+                                            onValueChange={(value) =>
+                                                setServiceType(value)
+                                            }
+                                        >
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Select test type" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {serviceTypes?.data?.serviceTypes?.map(
+                                                    (test) => (
+                                                        <SelectItem
+                                                            key={test.id}
+                                                            value={test.name}
+                                                            className="whitespace-normal"
+                                                        >
+                                                            {test.name}
+                                                        </SelectItem>
+                                                    ),
+                                                )}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
 
-					{/* Results */}
-					<div className='space-y-6 lg:col-span-3'>
-						{centres.map(centre => (
-							<Card
-								key={centre.id}
-								className='hover:shadow-lg transition-shadow'>
-								<CardContent className='p-6'>
-									<div className='gap-6 grid grid-cols-1 md:grid-cols-3'>
-										{/* Image */}
-										<div className='md:col-span-1'>
-											<img
-												src={centre.image || '/placeholder.svg'}
-												alt={centre.name}
-												className='rounded-lg w-full h-48 object-cover'
-											/>
-										</div>
+                                    <div className="space-y-1">
+                                        <label className="text-sm font-medium text-gray-700">
+                                            State
+                                        </label>
+                                        {isStateError && (
+                                            <p className="text-red-500 text-sm">
+                                                {errorState.message}
+                                            </p>
+                                        )}
+                                        <Select
+                                            value={state}
+                                            onValueChange={(value) =>
+                                                setState(value)
+                                            }
+                                            disabled={pendingStates}
+                                        >
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="State" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {statesData?.data.map(
+                                                    (state) => (
+                                                        <SelectItem
+                                                            key={state}
+                                                            value={state}
+                                                        >
+                                                            {state}
+                                                        </SelectItem>
+                                                    ),
+                                                )}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
 
-										{/* Details */}
-										<div className='space-y-4 md:col-span-2'>
-											<div>
-												<div className='flex items-center gap-2 mb-2'>
-													<h3 className='font-semibold text-xl'>
-														{centre.name}
-													</h3>
-													{centre.verified && (
-														<Badge className='bg-green-100 text-green-800'>
-															Verified
-														</Badge>
-													)}
-												</div>
+                                    <div className="space-y-1">
+                                        <label className="text-sm font-medium text-gray-700">
+                                            Local Government
+                                        </label>
+                                        {isLGAError && (
+                                            <p className="text-red-500 text-sm">
+                                                {errorLGA.message}
+                                            </p>
+                                        )}
+                                        <Select
+                                            value={lga}
+                                            onValueChange={(value) =>
+                                                setLga(value)
+                                            }
+                                            disabled={pendingLGA || !state}
+                                        >
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Select LGA" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {lgaData?.data.map((lga) => (
+                                                    <SelectItem
+                                                        key={lga}
+                                                        value={lga}
+                                                    >
+                                                        {lga}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
 
-												<div className='flex items-center gap-4 mb-3 text-gray-600 text-sm'>
-													<div className='flex items-center gap-1'>
-														<Star className='fill-yellow-400 w-4 h-4 text-yellow-400' />
-														<span>{centre.rating}</span>
-														<span>({centre.reviewCount} reviews)</span>
-													</div>
-													<div className='flex items-center gap-1'>
-														<MapPin className='w-4 h-4' />
-														<span>{centre.location}</span>
-													</div>
-												</div>
+                                    <div className="space-y-1 ">
+                                        <label className="text-sm font-medium text-gray-700">
+                                            Rating
+                                        </label>
+                                        <Select
+                                            value={(rating || '').toString()}
+                                            onValueChange={(value) => {
+                                                if (value === '0') {
+                                                    setRating('');
+                                                    return;
+                                                }
+                                                setRating(Number(value));
+                                            }}
+                                            disabled={pendingLGA || !state}
+                                        >
+                                            <SelectTrigger className="w-full">
+                                                <SelectValue placeholder="Rating" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {ratings.map((rat) => (
+                                                    <SelectItem
+                                                        key={rat.value}
+                                                        value={rat.value.toString()}
+                                                    >
+                                                        {rat.label}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="w-full">
+                                        <Button
+                                            className="w-full"
+                                            variant="outline"
+                                            onClick={clearAllSearchFilters}
+                                        >
+                                            Clear Filters
+                                        </Button>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
 
-												<div className='space-y-2 text-sm'>
-													<div className='flex items-center gap-2'>
-														<Phone className='w-4 h-4 text-gray-400' />
-														<span>{centre.phone}</span>
-													</div>
-													<div className='flex items-center gap-2'>
-														<Clock className='w-4 h-4 text-gray-400' />
-														<span>{centre.openHours}</span>
-													</div>
-												</div>
-											</div>
-
-											<div>
-												<p className='mb-2 font-medium text-gray-700 text-sm'>
-													Available Services:
-												</p>
-												<div className='flex flex-wrap gap-2'>
-													{centre.services.map(service => (
-														<Badge
-															key={service}
-															variant='secondary'>
-															{service}
-														</Badge>
-													))}
-												</div>
-											</div>
-
-											<div className='flex justify-between items-center pt-4'>
-												<div>
-													<p className='text-gray-600 text-sm'>Price Range</p>
-													<p className='font-semibold text-green-600'>
-														{centre.priceRange}
-													</p>
-												</div>
-												<div className='flex gap-2'>
-													<Button
-														variant='outline'
-														size='sm'
-														onClick={() => setSelectedCentre(centre)}>
-														View Details
-													</Button>
-													<Button
-														variant='outline'
-														size='sm'
-														onClick={() => setReviewCentre(centre)}>
-														<MessageSquare className='mr-1 w-4 h-4' />
-														Review
-													</Button>
-													<Button
-														size='sm'
-														onClick={() => setGuestBookingCentre(centre)}>
-														Book Now
-													</Button>
-												</div>
-											</div>
-										</div>
-									</div>
-								</CardContent>
-							</Card>
-						))}
-					</div>
-				</div>
-			</div>
-
-			<CentreDetailsModal
-				centre={selectedCentre}
-				isOpen={!!selectedCentre}
-				onClose={() => setSelectedCentre(null)}
-				onBook={centre => {
-					setSelectedCentre(null);
-					setGuestBookingCentre(centre);
-				}}
-			/>
-
-			<GuestBookingModal
-				centre={guestBookingCentre}
-				isOpen={!!guestBookingCentre}
-				onClose={() => setGuestBookingCentre(null)}
-			/>
-
-			<GuestReviewModal
-				centre={reviewCentre}
-				isOpen={!!reviewCentre}
-				onClose={() => setReviewCentre(null)}
-				onSubmit={handleReviewSubmit}
-			/>
-		</div>
-	);
+                    {/* Results */}
+                    <div className="lg:col-span-3">
+                        {/* No Results */}
+                        {centres?.total === 0 && (
+                            <NoDataFound message="No diagnostic centres found for the selected filters." />
+                        )}
+                        <SearchedCenterCard
+                            centers={centres}
+                            isPending={pendingCentres}
+                            isError={isCentresError}
+                            errorMessage={errorCentres?.message}
+                        />
+                        <div className="mt-6 flex justify-between items-center">
+                            <Pagination
+                                currentPage={
+                                    centres?.metaData?.currentPage || 1
+                                }
+                                totalPages={centres?.metaData?.totalPages || 1}
+                                onPageChange={(setPage) => {
+                                    setPageNumber(setPage);
+                                }}
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 }

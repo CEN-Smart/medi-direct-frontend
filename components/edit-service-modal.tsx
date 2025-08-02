@@ -1,591 +1,657 @@
 'use client';
 
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-	AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+import { useEffect, useState } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
-	Dialog,
-	DialogContent,
-	DialogHeader,
-	DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { DollarSign, Edit, FileText, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { resultDeliveryTimes } from '@/docs';
+import { cn } from '@/lib/utils';
+import {
+    useService,
+    useUpdateCenterService,
+} from '@/queries/diagnostic-center/center';
+import { useAllServiceTypes } from '@/queries/service-types';
+import { useCreateCenterServiceStore } from '@/stores/diagnostic-center';
+import { DiagnosticCenterResponse } from '@/types/diagnostic-center';
+import { Clock, FileText, Plus } from 'lucide-react';
+
+import { Switch } from './ui/switch';
 
 interface EditServiceModalProps {
-	service: any;
-	isOpen: boolean;
-	onClose: () => void;
-	onConfirm: (serviceData: any) => void;
-	onDelete?: (serviceId: string) => void;
+    service: DiagnosticCenterResponse['data']['centres'][number]['services'][number];
+    centerId: number;
+    children?: React.ReactNode;
+    serviceId?: number;
 }
 
-const serviceCategories = [
-	'Blood Tests',
-	'Imaging',
-	'Cardiac Tests',
-	'Respiratory Tests',
-	'Neurological Tests',
-	'Gynecological Tests',
-	'Urological Tests',
-	'Endocrine Tests',
-	'Infectious Disease Tests',
-	'Cancer Screening',
-	'General Health Checkup',
-	'Specialized Tests',
-];
-
 export function EditServiceModal({
-	service,
-	isOpen,
-	onClose,
-	onConfirm,
-	onDelete,
+    service,
+    centerId,
+    serviceId,
+    children,
 }: EditServiceModalProps) {
-	const [formData, setFormData] = useState({
-		id: '',
-		name: '',
-		category: '',
-		description: '',
-		price: '',
-		discountPrice: '',
-		duration: '',
-		preparationInstructions: '',
-		homeService: false,
-		emergencyService: false,
-		requiresAppointment: true,
-		available: true,
-		tags: [] as string[],
-		equipment: '',
-		staffRequired: '',
-		resultDelivery: '24-48 hours',
-	});
+    const [isOpen, setIsOpen] = useState(false);
+    const [newCenterId, setNewCenterId] = useState(centerId);
 
-	const [currentTag, setCurrentTag] = useState('');
-	const [errors, setErrors] = useState<Record<string, string>>({});
-	const [hasChanges, setHasChanges] = useState(false);
+    const {
+        data: serviceTypes,
+        isPending: pendingServices,
+        isError: isServiceError,
+        error: errorService,
+    } = useAllServiceTypes();
 
-	// Initialize form data when service changes
-	useEffect(() => {
-		if (service) {
-			setFormData({
-				id: service.id || '',
-				name: service.name || '',
-				category: service.category || '',
-				description: service.description || '',
-				price: service.price?.toString() || '',
-				discountPrice: service.discountPrice?.toString() || '',
-				duration: service.duration || '',
-				preparationInstructions: service.preparationInstructions || '',
-				homeService: service.homeService || false,
-				emergencyService: service.emergencyService || false,
-				requiresAppointment: service.requiresAppointment !== false,
-				available: service.available !== false,
-				tags: service.tags || [],
-				equipment: service.equipment || '',
-				staffRequired: service.staffRequired || '',
-				resultDelivery: service.resultDelivery || '24-48 hours',
-			});
-			setHasChanges(false);
-		}
-	}, [service]);
+    const {
+        data: serviceDetails,
+        isPending: pendingService,
+        isError: isCenterServiceError,
+        error: errorCenterService,
+    } = useService(newCenterId, serviceId ? serviceId : undefined);
 
-	const handleInputChange = (field: string, value: any) => {
-		setFormData(prev => ({ ...prev, [field]: value }));
-		setHasChanges(true);
-		// Clear error when user starts typing
-		if (errors[field]) {
-			setErrors(prev => ({ ...prev, [field]: '' }));
-		}
-	};
+    const { serviceData, setServiceData, clearServiceData } =
+        useCreateCenterServiceStore();
 
-	const addTag = () => {
-		if (currentTag.trim() && !formData.tags.includes(currentTag.trim())) {
-			setFormData(prev => ({
-				...prev,
-				tags: [...prev.tags, currentTag.trim()],
-			}));
-			setCurrentTag('');
-			setHasChanges(true);
-		}
-	};
+    console.log('Service Data:', serviceData);
 
-	const removeTag = (tagToRemove: string) => {
-		setFormData(prev => ({
-			...prev,
-			tags: prev.tags.filter(tag => tag !== tagToRemove),
-		}));
-		setHasChanges(true);
-	};
+    useEffect(() => {
+        if (isOpen) {
+            setNewCenterId(centerId);
+            clearServiceData();
+            if (serviceDetails?.data?.service) {
+                setServiceData({
+                    serviceName: serviceDetails?.data?.service.serviceName,
+                    serviceType: serviceDetails?.data?.service.serviceType,
+                    description: serviceDetails?.data?.service.description,
+                    price: Number(serviceDetails?.data?.service.price),
+                    isAvailable: serviceDetails?.data?.service.isAvailable,
+                    discountPrice: Number(
+                        serviceDetails?.data?.service.discountPrice,
+                    ),
+                    timeDuration: serviceDetails?.data?.service.timeDuration,
+                    resultDeliveryTime:
+                        serviceDetails?.data?.service.resultDeliveryTime,
+                    instructions: serviceDetails?.data?.service.instructions,
+                });
+            }
+        }
+    }, [
+        isOpen,
+        clearServiceData,
+        centerId,
+        serviceDetails?.data?.service,
+        setServiceData,
+    ]);
 
-	const validateForm = () => {
-		const newErrors: Record<string, string> = {};
+    const { mutate: updateService, isPending: pendingUpdateService } =
+        useUpdateCenterService(serviceId ? serviceId : undefined, setIsOpen);
 
-		if (!formData.name.trim()) newErrors.name = 'Service name is required';
-		if (!formData.category) newErrors.category = 'Category is required';
-		if (!formData.price || Number.parseFloat(formData.price) <= 0)
-			newErrors.price = 'Valid price is required';
-		if (!formData.duration.trim()) newErrors.duration = 'Duration is required';
+    return (
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+                {children || (
+                    <Button variant="outline" onClick={() => setIsOpen(true)}>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Update Service
+                    </Button>
+                )}
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-4xl px-0">
+                <DialogHeader className="px-6">
+                    <DialogTitle className="flex items-center gap-2 capitalize md:text-lg text-sm font-semibold">
+                        <Plus className="w-5 h-5 text-green-600" />
+                        Update Service ({service.serviceName})
+                    </DialogTitle>
+                </DialogHeader>
+                <DialogDescription className="sr-only">
+                    Update the details of the service offered by this diagnostic
+                    center.
+                </DialogDescription>
+                {/* Pending */}
+                {pendingService && (
+                    <div className="flex items-center justify-center py-4">
+                        <p className="text-gray-500">
+                            Loading service details...
+                        </p>
+                    </div>
+                )}
 
-		if (
-			formData.discountPrice &&
-			Number.parseFloat(formData.discountPrice) >=
-				Number.parseFloat(formData.price)
-		) {
-			newErrors.discountPrice =
-				'Discount price must be less than regular price';
-		}
+                {/* Error */}
+                {isCenterServiceError && (
+                    <div className="flex items-center justify-center py-4">
+                        <p className="text-red-500">
+                            {errorCenterService.message}
+                        </p>
+                    </div>
+                )}
 
-		setErrors(newErrors);
-		return Object.keys(newErrors).length === 0;
-	};
+                <div className="space-y-6 px-6 max-h-[70svh] overflow-y-auto">
+                    {/* Basic Information */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-lg">
+                                Basic Information
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="grid grid-cols-1 items-center md:grid-cols-2 gap-4">
+                                <div>
+                                    <Label htmlFor="serviceName">
+                                        Service Name *
+                                    </Label>
+                                    <Input
+                                        id="serviceName"
+                                        type="text"
+                                        defaultValue={
+                                            serviceDetails?.data?.service
+                                                .serviceName ||
+                                            serviceData.serviceName
+                                        }
+                                        onChange={(e) =>
+                                            setServiceData({
+                                                ...serviceData,
+                                                serviceName:
+                                                    e.target.value ||
+                                                    serviceDetails?.data
+                                                        ?.service.serviceName ||
+                                                    '',
+                                            })
+                                        }
+                                        placeholder="Enter service name"
+                                    />
+                                </div>
 
-	const handleSubmit = () => {
-		if (!validateForm()) return;
+                                <div className="space-y-1 w-full">
+                                    <Label htmlFor="category">Category *</Label>
+                                    {isServiceError && (
+                                        <p className="text-red-500 text-sm">
+                                            {errorService.message}
+                                        </p>
+                                    )}
+                                    <Select
+                                        defaultValue={
+                                            serviceDetails?.data?.service
+                                                .serviceType
+                                        }
+                                        onValueChange={(value) =>
+                                            setServiceData({
+                                                ...serviceData,
+                                                serviceType:
+                                                    value ||
+                                                    serviceDetails?.data
+                                                        ?.service.serviceType ||
+                                                    '',
+                                            })
+                                        }
+                                    >
+                                        <SelectTrigger
+                                            className={cn(`w-full`, {
+                                                'animate-pulse':
+                                                    pendingServices,
+                                            })}
+                                        >
+                                            <SelectValue placeholder="Select test type" />
+                                        </SelectTrigger>
+                                        <SelectContent className="z-[20000]">
+                                            {serviceTypes?.data?.serviceTypes?.map(
+                                                (test) => (
+                                                    <SelectItem
+                                                        key={test.id}
+                                                        value={test.name}
+                                                        className="whitespace-normal"
+                                                    >
+                                                        {test.name}
+                                                    </SelectItem>
+                                                ),
+                                            )}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
 
-		const serviceData = {
-			...formData,
-			price: Number.parseFloat(formData.price),
-			discountPrice: formData.discountPrice
-				? Number.parseFloat(formData.discountPrice)
-				: null,
-			updatedAt: new Date().toISOString(),
-		};
+                            <div>
+                                <Label htmlFor="description">Description</Label>
+                                <Textarea
+                                    className="resize-none"
+                                    id="description"
+                                    defaultValue={
+                                        serviceDetails?.data?.service
+                                            .description ||
+                                        serviceData.description
+                                    }
+                                    onChange={(e) =>
+                                        setServiceData({
+                                            ...serviceData,
+                                            description:
+                                                e.target.value ||
+                                                serviceDetails?.data?.service
+                                                    .description ||
+                                                '',
+                                        })
+                                    }
+                                    placeholder="Brief description of the service"
+                                    rows={3}
+                                />
+                            </div>
+                        </CardContent>
+                    </Card>
 
-		onConfirm(serviceData);
-		setHasChanges(false);
-	};
+                    {/* Pricing & Duration */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-lg flex items-center gap-2">
+                                ₦ Pricing &<Clock className="w-5 h-5" />
+                                Duration
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <Label htmlFor="price">Price (₦) *</Label>
+                                    <Input
+                                        id="price"
+                                        type="number"
+                                        defaultValue={
+                                            serviceDetails?.data?.service.price
+                                        }
+                                        onChange={(e) =>
+                                            setServiceData({
+                                                ...serviceData,
+                                                price:
+                                                    Number(e.target.value) ||
+                                                    Number(
+                                                        serviceDetails?.data
+                                                            ?.service.price,
+                                                    ),
+                                            })
+                                        }
+                                        placeholder="10000"
+                                    />
+                                </div>
 
-	const handleDelete = () => {
-		if (onDelete && formData.id) {
-			onDelete(formData.id);
-		}
-	};
+                                <div>
+                                    <Label htmlFor="discountPrice">
+                                        Discount Price (₦)
+                                    </Label>
+                                    <Input
+                                        id="discountPrice"
+                                        type="number"
+                                        defaultValue={
+                                            serviceDetails?.data?.service
+                                                .discountPrice
+                                        }
+                                        onChange={(e) =>
+                                            setServiceData({
+                                                ...serviceData,
+                                                discountPrice:
+                                                    Number(e.target.value) ||
+                                                    Number(
+                                                        serviceDetails?.data
+                                                            ?.service
+                                                            .discountPrice,
+                                                    ),
+                                            })
+                                        }
+                                        placeholder="8000"
+                                    />
+                                </div>
+                            </div>
 
-	const handleClose = () => {
-		if (hasChanges) {
-			const confirmClose = window.confirm(
-				'You have unsaved changes. Are you sure you want to close?'
-			);
-			if (!confirmClose) return;
-		}
-		setErrors({});
-		setHasChanges(false);
-		onClose();
-	};
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <Label htmlFor="duration">Duration *</Label>
+                                    <Input
+                                        id="duration"
+                                        type="text"
+                                        defaultValue={
+                                            serviceDetails?.data?.service
+                                                .timeDuration ||
+                                            serviceData.timeDuration
+                                        }
+                                        onChange={(e) =>
+                                            setServiceData({
+                                                ...serviceData,
+                                                timeDuration:
+                                                    e.target.value ||
+                                                    serviceDetails?.data
+                                                        ?.service
+                                                        .timeDuration ||
+                                                    '',
+                                            })
+                                        }
+                                        placeholder="30 minutes"
+                                    />
+                                </div>
+                                <div>
+                                    <Label htmlFor="resultDelivery">
+                                        Result Delivery Time
+                                    </Label>
+                                    <Select
+                                        defaultValue={
+                                            serviceDetails?.data?.service
+                                                .resultDeliveryTime
+                                        }
+                                        onValueChange={(value) =>
+                                            setServiceData({
+                                                ...serviceData,
+                                                resultDeliveryTime:
+                                                    value ||
+                                                    serviceDetails?.data
+                                                        ?.service
+                                                        .resultDeliveryTime ||
+                                                    '',
+                                            })
+                                        }
+                                    >
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Select delivery time" />
+                                        </SelectTrigger>
+                                        <SelectContent className="z-[20000]">
+                                            {resultDeliveryTimes.map((time) => (
+                                                <SelectItem
+                                                    key={time}
+                                                    value={time}
+                                                >
+                                                    {time}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
 
-	if (!service) return null;
+                    {/* Service Options */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-lg">
+                                Service Options
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="grid grid-cols-1">
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="font-medium">
+                                                Currently Available
+                                            </p>
+                                            <p className="text-sm text-gray-600">
+                                                Service is active and bookable
+                                            </p>
+                                        </div>
+                                        <Switch
+                                            defaultChecked={
+                                                serviceDetails?.data?.service
+                                                    .isAvailable ||
+                                                serviceData.isAvailable ||
+                                                false
+                                            }
+                                            onCheckedChange={(checked) =>
+                                                setServiceData({
+                                                    ...serviceData,
+                                                    isAvailable:
+                                                        checked ||
+                                                        serviceDetails?.data
+                                                            ?.service
+                                                            .isAvailable ||
+                                                        false,
+                                                })
+                                            }
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
 
-	return (
-		<Dialog
-			open={isOpen}
-			onOpenChange={handleClose}>
-			<DialogContent className='max-w-4xl max-h-[90vh] overflow-y-auto'>
-				<DialogHeader>
-					<div className='flex justify-between items-center'>
-						<DialogTitle className='flex items-center gap-2'>
-							<Edit className='w-5 h-5 text-blue-600' />
-							Edit Service
-						</DialogTitle>
-						{hasChanges && (
-							<Badge
-								variant='outline'
-								className='text-orange-600'>
-								Unsaved Changes
-							</Badge>
-						)}
-					</div>
-				</DialogHeader>
+                    {/* Instructions  */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-lg flex items-center gap-2">
+                                <FileText className="w-5 h-5" />
+                                Instructions
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div>
+                                <Label htmlFor="preparationInstructions">
+                                    Preparation Instructions
+                                </Label>
+                                <Textarea
+                                    className="resize-none"
+                                    id="preparationInstructions"
+                                    defaultValue={
+                                        serviceDetails?.data?.service
+                                            .instructions ||
+                                        serviceData.instructions
+                                    }
+                                    onChange={(e) =>
+                                        setServiceData({
+                                            ...serviceData,
+                                            instructions:
+                                                e.target.value ||
+                                                serviceDetails?.data?.service
+                                                    .instructions ||
+                                                '',
+                                        })
+                                    }
+                                    placeholder="Instructions for patients before the test"
+                                    rows={4}
+                                />
+                            </div>
+                        </CardContent>
+                    </Card>
 
-				<div className='space-y-6'>
-					{/* Service Status */}
-					<Card>
-						<CardHeader>
-							<CardTitle className='text-lg'>Service Status</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<div className='flex justify-between items-center p-4 border rounded-lg'>
-								<div>
-									<p className='font-medium'>Service Availability</p>
-									<p className='text-gray-600 text-sm'>
-										{formData.available
-											? 'Service is active and accepting bookings'
-											: 'Service is currently disabled'}
-									</p>
-								</div>
-								<Checkbox
-									checked={formData.available}
-									onCheckedChange={checked =>
-										handleInputChange('available', checked)
-									}
-								/>
-							</div>
-						</CardContent>
-					</Card>
+                    {/* Preview */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-lg">
+                                Service Preview
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="border rounded-lg p-4 bg-gray-50">
+                                <div className="flex justify-between items-start mb-3">
+                                    <div>
+                                        <h3 className="text-lg font-semibold">
+                                            {serviceData.serviceName ||
+                                                serviceDetails?.data?.service
+                                                    .serviceName}
+                                        </h3>
+                                        {serviceData.serviceType ||
+                                            (serviceDetails?.data?.service
+                                                .serviceType && (
+                                                <Badge variant="outline">
+                                                    {serviceData.serviceType ||
+                                                        serviceDetails?.data
+                                                            ?.service
+                                                            .serviceType}
+                                                </Badge>
+                                            ))}
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-xl font-bold text-green-600">
+                                            ₦
+                                            {serviceData.price ||
+                                            serviceDetails?.data?.service.price
+                                                ? Number(
+                                                      serviceData.price ||
+                                                          serviceDetails?.data
+                                                              ?.service.price,
+                                                  ).toLocaleString()
+                                                : '0'}
+                                        </p>
+                                        {serviceData.discountPrice ||
+                                            (serviceDetails?.data?.service
+                                                .discountPrice && (
+                                                <p className="text-sm text-gray-500 line-through">
+                                                    ₦
+                                                    {Number(
+                                                        serviceData.discountPrice ||
+                                                            serviceDetails?.data
+                                                                ?.service
+                                                                .discountPrice,
+                                                    ).toLocaleString()}
+                                                </p>
+                                            ))}
+                                    </div>
+                                </div>
 
-					{/* Basic Information */}
-					<Card>
-						<CardHeader>
-							<CardTitle className='text-lg'>Basic Information</CardTitle>
-						</CardHeader>
-						<CardContent className='space-y-4'>
-							<div className='gap-4 grid grid-cols-1 md:grid-cols-2'>
-								<div>
-									<Label htmlFor='serviceName'>Service Name *</Label>
-									<Input
-										id='serviceName'
-										value={formData.name}
-										onChange={e => handleInputChange('name', e.target.value)}
-										placeholder='e.g., Full Blood Count'
-										className={errors.name ? 'border-red-500' : ''}
-									/>
-									{errors.name && (
-										<p className='mt-1 text-red-500 text-sm'>{errors.name}</p>
-									)}
-								</div>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                    <div className="flex items-center gap-2">
+                                        <Clock className="w-4 h-4 text-blue-500" />
+                                        <span>
+                                            {serviceData.timeDuration ||
+                                                serviceDetails?.data?.service
+                                                    .timeDuration}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span
+                                            className={cn(
+                                                `w-2 h-2 rounded-full bg-red-500`,
+                                                {
+                                                    'bg-green-500':
+                                                        serviceData.isAvailable ||
+                                                        serviceDetails?.data
+                                                            ?.service
+                                                            .isAvailable,
+                                                },
+                                            )}
+                                        />
+                                        <span>
+                                            {serviceData.isAvailable ||
+                                            serviceDetails?.data?.service
+                                                .isAvailable
+                                                ? 'Available'
+                                                : 'Unavailable'}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span>🏠</span>
+                                        <span>
+                                            {serviceData.isAvailable ||
+                                            serviceDetails?.data?.service
+                                                .isAvailable
+                                                ? 'In-Centre Only'
+                                                : ''}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span>⚡</span>
+                                        <span>
+                                            {serviceData.isAvailable ||
+                                            serviceDetails?.data?.service
+                                                .isAvailable
+                                                ? 'Regular'
+                                                : ''}
+                                        </span>
+                                    </div>
+                                </div>
 
-								<div>
-									<Label htmlFor='category'>Category *</Label>
-									<Select
-										value={formData.category}
-										onValueChange={value =>
-											handleInputChange('category', value)
-										}>
-										<SelectTrigger
-											className={errors.category ? 'border-red-500' : ''}>
-											<SelectValue placeholder='Select category' />
-										</SelectTrigger>
-										<SelectContent>
-											{serviceCategories.map(category => (
-												<SelectItem
-													key={category}
-													value={category}>
-													{category}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-									{errors.category && (
-										<p className='mt-1 text-red-500 text-sm'>
-											{errors.category}
-										</p>
-									)}
-								</div>
-							</div>
+                                {serviceData.description ||
+                                    (serviceDetails?.data?.service
+                                        .description && (
+                                        <p className="text-sm text-gray-600 mt-3">
+                                            {serviceData.description ||
+                                                serviceDetails?.data?.service
+                                                    .description}
+                                        </p>
+                                    ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
 
-							<div>
-								<Label htmlFor='description'>Description</Label>
-								<Textarea
-									id='description'
-									value={formData.description}
-									onChange={e =>
-										handleInputChange('description', e.target.value)
-									}
-									placeholder='Brief description of the service'
-									rows={3}
-								/>
-							</div>
-						</CardContent>
-					</Card>
-
-					{/* Pricing & Duration */}
-					<Card>
-						<CardHeader>
-							<CardTitle className='flex items-center gap-2 text-lg'>
-								<DollarSign className='w-5 h-5' />
-								Pricing & Duration
-							</CardTitle>
-						</CardHeader>
-						<CardContent className='space-y-4'>
-							<div className='gap-4 grid grid-cols-1 md:grid-cols-3'>
-								<div>
-									<Label htmlFor='price'>Price (₦) *</Label>
-									<Input
-										id='price'
-										type='number'
-										value={formData.price}
-										onChange={e => handleInputChange('price', e.target.value)}
-										placeholder='10000'
-										className={errors.price ? 'border-red-500' : ''}
-									/>
-									{errors.price && (
-										<p className='mt-1 text-red-500 text-sm'>{errors.price}</p>
-									)}
-								</div>
-
-								<div>
-									<Label htmlFor='discountPrice'>Discount Price (₦)</Label>
-									<Input
-										id='discountPrice'
-										type='number'
-										value={formData.discountPrice}
-										onChange={e =>
-											handleInputChange('discountPrice', e.target.value)
-										}
-										placeholder='8000'
-										className={errors.discountPrice ? 'border-red-500' : ''}
-									/>
-									{errors.discountPrice && (
-										<p className='mt-1 text-red-500 text-sm'>
-											{errors.discountPrice}
-										</p>
-									)}
-								</div>
-
-								<div>
-									<Label htmlFor='duration'>Duration *</Label>
-									<Input
-										id='duration'
-										value={formData.duration}
-										onChange={e =>
-											handleInputChange('duration', e.target.value)
-										}
-										placeholder='30 minutes'
-										className={errors.duration ? 'border-red-500' : ''}
-									/>
-									{errors.duration && (
-										<p className='mt-1 text-red-500 text-sm'>
-											{errors.duration}
-										</p>
-									)}
-								</div>
-							</div>
-
-							<div className='gap-4 grid grid-cols-1 md:grid-cols-2'>
-								<div>
-									<Label htmlFor='resultDelivery'>Result Delivery Time</Label>
-									<Select
-										value={formData.resultDelivery}
-										onValueChange={value =>
-											handleInputChange('resultDelivery', value)
-										}>
-										<SelectTrigger>
-											<SelectValue />
-										</SelectTrigger>
-										<SelectContent>
-											<SelectItem value='Same day'>Same day</SelectItem>
-											<SelectItem value='24 hours'>24 hours</SelectItem>
-											<SelectItem value='24-48 hours'>24-48 hours</SelectItem>
-											<SelectItem value='2-3 days'>2-3 days</SelectItem>
-											<SelectItem value='3-5 days'>3-5 days</SelectItem>
-											<SelectItem value='1 week'>1 week</SelectItem>
-										</SelectContent>
-									</Select>
-								</div>
-
-								<div>
-									<Label htmlFor='staffRequired'>Staff Required</Label>
-									<Input
-										id='staffRequired'
-										value={formData.staffRequired}
-										onChange={e =>
-											handleInputChange('staffRequired', e.target.value)
-										}
-										placeholder='e.g., Lab Technician, Radiologist'
-									/>
-								</div>
-							</div>
-						</CardContent>
-					</Card>
-
-					{/* Service Options */}
-					<Card>
-						<CardHeader>
-							<CardTitle className='text-lg'>Service Options</CardTitle>
-						</CardHeader>
-						<CardContent className='space-y-4'>
-							<div className='gap-6 grid grid-cols-1 md:grid-cols-2'>
-								<div className='space-y-4'>
-									<div className='flex justify-between items-center'>
-										<div>
-											<p className='font-medium'>Home Service Available</p>
-											<p className='text-gray-600 text-sm'>
-												Service can be performed at patient's location
-											</p>
-										</div>
-										<Checkbox
-											checked={formData.homeService}
-											onCheckedChange={checked =>
-												handleInputChange('homeService', checked)
-											}
-										/>
-									</div>
-
-									<div className='flex justify-between items-center'>
-										<div>
-											<p className='font-medium'>Emergency Service</p>
-											<p className='text-gray-600 text-sm'>
-												Available for urgent/emergency cases
-											</p>
-										</div>
-										<Checkbox
-											checked={formData.emergencyService}
-											onCheckedChange={checked =>
-												handleInputChange('emergencyService', checked)
-											}
-										/>
-									</div>
-								</div>
-
-								<div className='space-y-4'>
-									<div className='flex justify-between items-center'>
-										<div>
-											<p className='font-medium'>Requires Appointment</p>
-											<p className='text-gray-600 text-sm'>
-												Prior appointment booking required
-											</p>
-										</div>
-										<Checkbox
-											checked={formData.requiresAppointment}
-											onCheckedChange={checked =>
-												handleInputChange('requiresAppointment', checked)
-											}
-										/>
-									</div>
-								</div>
-							</div>
-						</CardContent>
-					</Card>
-
-					{/* Instructions & Equipment */}
-					<Card>
-						<CardHeader>
-							<CardTitle className='flex items-center gap-2 text-lg'>
-								<FileText className='w-5 h-5' />
-								Instructions & Equipment
-							</CardTitle>
-						</CardHeader>
-						<CardContent className='space-y-4'>
-							<div>
-								<Label htmlFor='preparationInstructions'>
-									Preparation Instructions
-								</Label>
-								<Textarea
-									id='preparationInstructions'
-									value={formData.preparationInstructions}
-									onChange={e =>
-										handleInputChange('preparationInstructions', e.target.value)
-									}
-									placeholder='Instructions for patients before the test'
-									rows={4}
-								/>
-							</div>
-
-							<div>
-								<Label htmlFor='equipment'>Equipment Required</Label>
-								<Input
-									id='equipment'
-									value={formData.equipment}
-									onChange={e => handleInputChange('equipment', e.target.value)}
-									placeholder='e.g., X-Ray Machine, Blood Collection Kit'
-								/>
-							</div>
-
-							{/* Tags */}
-							<div>
-								<Label>Service Tags</Label>
-								<div className='flex gap-2 mb-2'>
-									<Input
-										value={currentTag}
-										onChange={e => setCurrentTag(e.target.value)}
-										placeholder='Add a tag'
-										onKeyPress={e => e.key === 'Enter' && addTag()}
-									/>
-									<Button
-										type='button'
-										onClick={addTag}
-										size='sm'>
-										Add
-									</Button>
-								</div>
-								<div className='flex flex-wrap gap-2'>
-									{formData.tags.map(tag => (
-										<Badge
-											key={tag}
-											variant='secondary'
-											className='cursor-pointer'
-											onClick={() => removeTag(tag)}>
-											{tag} ×
-										</Badge>
-									))}
-								</div>
-							</div>
-						</CardContent>
-					</Card>
-				</div>
-
-				{/* Action Buttons */}
-				<div className='flex justify-between pt-6 border-t'>
-					<div>
-						{onDelete && (
-							<AlertDialog>
-								<AlertDialogTrigger asChild>
-									<Button
-										variant='destructive'
-										className='flex items-center gap-2'>
-										<Trash2 className='w-4 h-4' />
-										Delete Service
-									</Button>
-								</AlertDialogTrigger>
-								<AlertDialogContent>
-									<AlertDialogHeader>
-										<AlertDialogTitle>Delete Service</AlertDialogTitle>
-										<AlertDialogDescription>
-											Are you sure you want to delete "{formData.name}"? This
-											action cannot be undone and will affect any existing
-											bookings.
-										</AlertDialogDescription>
-									</AlertDialogHeader>
-									<AlertDialogFooter>
-										<AlertDialogCancel>Cancel</AlertDialogCancel>
-										<AlertDialogAction
-											onClick={handleDelete}
-											className='bg-red-600 hover:bg-red-700'>
-											Delete
-										</AlertDialogAction>
-									</AlertDialogFooter>
-								</AlertDialogContent>
-							</AlertDialog>
-						)}
-					</div>
-
-					<div className='flex gap-2'>
-						<Button
-							variant='outline'
-							onClick={handleClose}>
-							Cancel
-						</Button>
-						<Button
-							onClick={handleSubmit}
-							disabled={!hasChanges}
-							className='bg-blue-600 hover:bg-blue-700'>
-							Save Changes
-						</Button>
-					</div>
-				</div>
-			</DialogContent>
-		</Dialog>
-	);
+                {/* Action Buttons */}
+                <div className="flex justify-between pt-6 border-t px-6">
+                    <Button variant="outline" onClick={() => setIsOpen(false)}>
+                        Cancel
+                    </Button>
+                    <div className="flex gap-2">
+                        <Button
+                            disabled={
+                                pendingUpdateService ||
+                                !serviceData.isAvailable ||
+                                !serviceData.resultDeliveryTime ||
+                                !serviceData.serviceType
+                            }
+                            type="submit"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                updateService({
+                                    description:
+                                        serviceData.description ||
+                                        serviceDetails?.data?.service
+                                            .description ||
+                                        '',
+                                    discountPrice:
+                                        Number(serviceData.discountPrice) ||
+                                        Number(
+                                            serviceDetails?.data?.service
+                                                .discountPrice,
+                                        ),
+                                    instructions:
+                                        serviceData.instructions ||
+                                        serviceDetails?.data?.service
+                                            .instructions ||
+                                        '',
+                                    isAvailable: serviceData.isAvailable,
+                                    price:
+                                        Number(serviceData.price) ||
+                                        Number(
+                                            serviceDetails?.data?.service.price,
+                                        ),
+                                    resultDeliveryTime:
+                                        serviceData.resultDeliveryTime ||
+                                        serviceDetails?.data?.service
+                                            .resultDeliveryTime ||
+                                        '',
+                                    serviceType:
+                                        serviceData.serviceType ||
+                                        serviceDetails?.data?.service
+                                            .serviceType ||
+                                        '',
+                                    serviceName:
+                                        serviceData.serviceName ||
+                                        serviceDetails?.data?.service
+                                            .serviceName ||
+                                        '',
+                                    timeDuration:
+                                        serviceData.timeDuration ||
+                                        serviceDetails?.data?.service
+                                            .timeDuration ||
+                                        '',
+                                });
+                            }}
+                            className="bg-green-600 hover:bg-green-700"
+                        >
+                            {pendingUpdateService
+                                ? 'Updating...'
+                                : 'Update Service'}
+                        </Button>
+                    </div>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
 }

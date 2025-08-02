@@ -1,82 +1,170 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import Link from "next/link"
-import { Menu, User } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+
+import { useState } from 'react';
+
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { links } from '@/docs';
+import { cn } from '@/lib/utils';
+import { useLogoutUser } from '@/queries/authentication';
+import { ChevronDown, LogOut, Menu, X } from 'lucide-react';
+
+import { Logo } from './logo';
+
+const resourcesLinks = [
+    { href: '/about', label: 'About Us' },
+    { href: '/faq', label: 'FAQ' },
+    { href: '/pricing', label: 'Pricing' },
+    { href: '/contact', label: 'Contact' },
+    { href: '/privacy', label: 'Privacy Policy' },
+    { href: '/terms', label: 'Terms of Service' },
+];
 
 export function Header() {
-  const [isOpen, setIsOpen] = useState(false)
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const pathname = usePathname();
+    const isDashboardRoute = pathname.includes('dashboard');
+    const logout = useLogoutUser();
 
-  return (
-    <header className="bg-white shadow-xs border-b">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">MD</span>
+    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
+    return (
+        <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-[1001]">
+            <div className="container mx-auto px-4">
+                <div className="flex items-center justify-between h-16">
+                    {/* Logo */}
+                    <Logo />
+
+                    {isDashboardRoute ? (
+                        <button
+                            onClick={() => logout()}
+                            className="text-gray-700  hover:text-red-600 cursor-pointer transition-colors md:flex hidden items-center gap-1"
+                        >
+                            <LogOut className="w-4 h-4" />
+                            Logout
+                        </button>
+                    ) : (
+                        <nav className="hidden md:flex items-center space-x-8">
+                            {links.map((link) => (
+                                <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    className={cn(
+                                        'text-gray-700 hover:text-blue-600 transition-colors',
+                                        {
+                                            'text-blue-600 font-semibold':
+                                                pathname === link.href,
+                                        },
+                                    )}
+                                >
+                                    {link.label}
+                                </Link>
+                            ))}
+                            <DropdownMenu>
+                                <DropdownMenuTrigger className="text-gray-700 hover:text-blue-600 flex gap-1 items-center transition-colors">
+                                    Resources
+                                    <ChevronDown className="ml-1 w-4 h-4" />
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent
+                                    align="end"
+                                    className="z-[1002]"
+                                >
+                                    {resourcesLinks.map((link) => (
+                                        <DropdownMenuItem
+                                            key={link.href}
+                                            asChild
+                                        >
+                                            <Link
+                                                href={link.href}
+                                                className={cn(
+                                                    'text-gray-700 hover:text-blue-600',
+                                                    {
+                                                        'text-blue-600 font-semibold':
+                                                            pathname ===
+                                                            link.href,
+                                                    },
+                                                )}
+                                            >
+                                                {link.label}
+                                            </Link>
+                                        </DropdownMenuItem>
+                                    ))}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </nav>
+                    )}
+
+                    {/* Mobile Menu Button */}
+                    <button
+                        onClick={toggleMenu}
+                        className="md:hidden p-2 rounded-md text-gray-700 hover:text-blue-600 hover:bg-gray-100"
+                    >
+                        {isMenuOpen ? (
+                            <X className="w-6 h-6" />
+                        ) : (
+                            <Menu className="w-6 h-6" />
+                        )}
+                    </button>
+                </div>
+
+                {/* Mobile Navigation */}
+                {isMenuOpen && (
+                    <div className="md:hidden py-4 border-t border-gray-200">
+                        {isDashboardRoute ? (
+                            <button
+                                onClick={() => logout()}
+                                className="text-gray-700 hover:text-red-600 cursor-pointer transition-colors flex items-center gap-1"
+                            >
+                                <LogOut className="w-4 h-4" />
+                                Logout
+                            </button>
+                        ) : (
+                            <nav className="flex flex-col space-y-4">
+                                {links.map((link) => (
+                                    <Link
+                                        key={link.href}
+                                        href={link.href}
+                                        className={cn(
+                                            'text-gray-700 hover:text-blue-600 transition-colors px-2 py-1',
+                                            {
+                                                'text-blue-600 font-semibold':
+                                                    pathname === link.href,
+                                            },
+                                        )}
+                                        onClick={toggleMenu}
+                                    >
+                                        {link.label}
+                                    </Link>
+                                ))}
+
+                                {resourcesLinks.map((link) => (
+                                    <Link
+                                        key={link.href}
+                                        href={link.href}
+                                        className={cn(
+                                            'text-gray-700 hover:text-blue-600 transition-colors px-2 py-1',
+                                            {
+                                                'text-blue-600 font-semibold':
+                                                    pathname === link.href,
+                                            },
+                                        )}
+                                        onClick={toggleMenu}
+                                    >
+                                        {link.label}
+                                    </Link>
+                                ))}
+                            </nav>
+                        )}
+                    </div>
+                )}
             </div>
-            <span className="text-xl font-bold text-gray-900">MediDirect</span>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/search" className="text-gray-600 hover:text-blue-600 transition-colors">
-              Find Centres
-            </Link>
-            <Link href="/how-it-works" className="text-gray-600 hover:text-blue-600 transition-colors">
-              How It Works
-            </Link>
-            <Link href="/for-centres" className="text-gray-600 hover:text-blue-600 transition-colors">
-              For Centres
-            </Link>
-          </nav>
-
-          {/* Desktop Auth Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Link href="/dashboard">
-              <Button variant="ghost" size="sm">
-                <User className="w-4 h-4 mr-2" />
-                Dashboard
-              </Button>
-            </Link>
-            <Link href="/auth/login">
-              <Button size="sm">Login</Button>
-            </Link>
-          </div>
-
-          {/* Mobile Menu */}
-          <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="sm">
-                <Menu className="w-5 h-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-[300px]">
-              <div className="flex flex-col space-y-4 mt-8">
-                <Link href="/search" className="text-lg font-medium">
-                  Find Centres
-                </Link>
-                <Link href="/how-it-works" className="text-lg font-medium">
-                  How It Works
-                </Link>
-                <Link href="/for-centres" className="text-lg font-medium">
-                  For Centres
-                </Link>
-                <hr />
-                <Link href="/dashboard" className="text-lg font-medium">
-                  Dashboard
-                </Link>
-                <Link href="/auth/login">
-                  <Button className="w-full">Login</Button>
-                </Link>
-              </div>
-            </SheetContent>
-          </Sheet>
-        </div>
-      </div>
-    </header>
-  )
+        </header>
+    );
 }

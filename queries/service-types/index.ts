@@ -20,7 +20,6 @@ import { allKeysToValidate, serviceTypeKeys } from '../keys';
 const fetchAllServiceTypes = async (): Promise<AllServiceTypesResponse> => {
     const response = await apiClient.get({
         url: '/service-types',
-        auth: false, // Assuming this endpoint does not require authentication
     });
     return response;
 };
@@ -88,6 +87,8 @@ const createServiceType = async (
 };
 
 export const useCreateServiceType = (
+    ref: React.RefObject<HTMLFormElement | null>,
+    setIsOpen?: (isOpen: boolean) => void,
     options?: UseMutationOptions<
         SingleServiceTypeResponse,
         ErrorResponse,
@@ -106,6 +107,13 @@ export const useCreateServiceType = (
                 toast.success(
                     data.message || 'Service type created successfully',
                 );
+                // Reset form if ref is provided
+                if (ref.current) {
+                    ref.current.reset();
+                }
+                if (setIsOpen) {
+                    setIsOpen(false);
+                }
             }
         },
         onError: (error) => {
@@ -131,6 +139,8 @@ const updateServiceType = async (
 
 export const useUpdateServiceType = (
     id: number,
+    ref: React.RefObject<HTMLFormElement | null>,
+    setIsOpen?: (isOpen: boolean) => void,
     options?: UseMutationOptions<
         SingleServiceTypeResponse,
         ErrorResponse,
@@ -149,6 +159,13 @@ export const useUpdateServiceType = (
                 toast.success(
                     data.message || 'Service type updated successfully',
                 );
+                // Reset form if ref is provided
+                if (ref.current) {
+                    ref.current.reset();
+                }
+                if (setIsOpen) {
+                    setIsOpen(false);
+                }
             }
         },
         onError: (error) => {
