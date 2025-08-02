@@ -76,7 +76,7 @@ export function DiagnosticCenterCard({
                     </Card>
                 )}
                 {pending && <DiagnosticCenterCardSkeleton />}
-                <div className="max-h-[40svh] overflow-y-auto space-y-4">
+                <div className="max-h-[60svh] overflow-y-auto space-y-4">
                     {!pending &&
                         !isError &&
                         centersWithBookingsReviewsAndServices &&

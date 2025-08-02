@@ -53,7 +53,7 @@ export function DiagnosticConfirmedBookingCard({
     }
 
     return (
-        <div className="space-y-4 max-h-[400px] overflow-y-auto">
+        <div className="space-y-4 max-h-[60svh] overflow-y-auto">
             <RescheduleBookingSuccessDialog />
             <CancelBookingSuccessDialog />
             {/* No confirmed bookings */}

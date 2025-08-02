@@ -52,7 +52,7 @@ export function DiagnosticCenterBookingCard({
         return <div>Error: {errorMessage}</div>;
     }
     return (
-        <div className="space-y-4 max-h-[400px] overflow-y-auto">
+        <div className="space-y-4 max-h-[60svh] overflow-y-auto">
             {/* No pending bookings */}
             {centerBookings?.filter(
                 (booking) =>
