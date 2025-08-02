@@ -116,7 +116,7 @@ export function DiagnosticCenterCard({
                                                 </div>
                                             </div>
 
-                                            <div className="flex items-center gap-2 text-gray-600">
+                                            <div className="flex items-start gap-2 text-gray-600">
                                                 <MapPin className="w-4 h-4" />
                                                 <span className="capitalize">
                                                     {center.address}
