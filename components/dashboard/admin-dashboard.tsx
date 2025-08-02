@@ -308,7 +308,7 @@ export function AdminDashboard() {
                                                             </Badge>
                                                         </TableCell>
 
-                                                        <TableCell className="text-gray-600 text-sm">
+                                                        <TableCell className="text-gray-600 text-sm whitespace-nowrap">
                                                             {format(
                                                                 new Date(
                                                                     user.createdAt,
