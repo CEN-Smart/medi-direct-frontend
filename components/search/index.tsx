@@ -123,7 +123,7 @@ export function GuestSearchPage() {
                                             <SelectTrigger className="w-full">
                                                 <SelectValue placeholder="Select test type" />
                                             </SelectTrigger>
-                                            <SelectContent>
+                                            <SelectContent className="max-h-60 overflow-y-auto z-[1500]">
                                                 {serviceTypes?.data?.serviceTypes?.map(
                                                     (test) => (
                                                         <SelectItem
