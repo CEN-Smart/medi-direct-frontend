@@ -12,6 +12,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { links } from '@/docs';
+import { useLandingPage } from '@/hooks/use-landing-page';
 import { cn } from '@/lib/utils';
 import { useLogoutUser } from '@/queries/authentication';
 import { ChevronDown, LogOut, Menu, X } from 'lucide-react';
@@ -31,12 +32,22 @@ export function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const pathname = usePathname();
     const isDashboardRoute = pathname.includes('dashboard');
+    const { sticky } = useLandingPage();
     const logout = useLogoutUser();
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
     return (
-        <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-[1001]">
+        <header
+            role="banner"
+            className={cn(
+                ` transition-all z-[1001] w-full top-0 bg-linear-to-t from-blue-50 to-white   duration-500`,
+                {
+                    'shadow-lg border-b border-blue-50 fixed bg-linear-to-b from-blue-50 to-white ':
+                        sticky,
+                },
+            )}
+        >
             <div className="container mx-auto px-4">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}

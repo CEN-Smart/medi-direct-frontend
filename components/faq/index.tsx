@@ -2,8 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { Footer } from '@/components/footer';
-import { Header } from '@/components/header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -289,8 +287,6 @@ export function FAQ() {
 
     return (
         <div className="min-h-screen bg-white">
-            <Header />
-
             <div className="bg-gradient-to-br from-blue-50 via-white to-purple-50">
                 {/* Hero Section */}
                 <section ref={heroRef} className="py-20 px-4">
@@ -529,8 +525,6 @@ export function FAQ() {
                     </div>
                 </section>
             </div>
-
-            <Footer />
         </div>
     );
 }

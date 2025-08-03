@@ -2,8 +2,6 @@
 
 import { useEffect, useRef } from 'react';
 
-import { Footer } from '@/components/footer';
-import { Header } from '@/components/header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { animations } from '@/lib/animations';
 import { Database, Eye, Globe, Lock, Shield, UserCheck } from 'lucide-react';
@@ -94,8 +92,6 @@ export function Privacy() {
 
     return (
         <div className="min-h-screen bg-white">
-            <Header />
-
             {/* Hero Section */}
             <section
                 ref={heroRef}
@@ -214,8 +210,6 @@ export function Privacy() {
                     </div>
                 </div>
             </section>
-
-            <Footer />
         </div>
     );
 }
