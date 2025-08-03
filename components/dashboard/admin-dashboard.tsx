@@ -338,20 +338,22 @@ export function AdminDashboard() {
                             </Card>
 
                             {/* Pagination */}
-                            <div className="flex items-center justify-end py-4">
-                                <Pagination
-                                    currentPage={
-                                        allUsers?.metaData.currentPage || 1
-                                    }
-                                    totalPages={
-                                        allUsers?.metaData.totalPages || 1
-                                    }
-                                    onPageChange={(page) => {
-                                        setPageNumber(page);
-                                        setSearchText(''); // Reset search on page change
-                                    }}
-                                />
-                            </div>
+                            {allUsers && allUsers?.data.users.length > 0 && (
+                                <div className="flex items-center justify-end py-4">
+                                    <Pagination
+                                        currentPage={
+                                            allUsers?.metaData.currentPage || 1
+                                        }
+                                        totalPages={
+                                            allUsers?.metaData.totalPages || 1
+                                        }
+                                        onPageChange={(page) => {
+                                            setPageNumber(page);
+                                            setSearchText(''); // Reset search on page change
+                                        }}
+                                    />
+                                </div>
+                            )}
                         </>
                     )}
                     {activeTab === 'profile' && (

@@ -187,13 +187,15 @@ export function DiagnosticCenterCard({
                         ))}
                 </div>
             </div>
-            <div className="mt-6 flex justify-end ">
-                <Pagination
-                    currentPage={centers?.metaData.currentPage ?? 1}
-                    totalPages={centers?.metaData.totalPages ?? 1}
-                    onPageChange={(page) => setPageNumber(page)}
-                />
-            </div>
+            {centersWithBookingsReviewsAndServices?.length > 0 && (
+                <div className="mt-6 flex justify-end ">
+                    <Pagination
+                        currentPage={centers?.metaData.currentPage ?? 1}
+                        totalPages={centers?.metaData.totalPages ?? 1}
+                        onPageChange={(page) => setPageNumber(page)}
+                    />
+                </div>
+            )}
         </div>
     );
 }

@@ -261,17 +261,21 @@ export function GuestSearchPage() {
                             isError={isCentresError}
                             errorMessage={errorCentres?.message}
                         />
-                        <div className="mt-6 flex justify-between items-center">
-                            <Pagination
-                                currentPage={
-                                    centres?.metaData?.currentPage || 1
-                                }
-                                totalPages={centres?.metaData?.totalPages || 1}
-                                onPageChange={(setPage) => {
-                                    setPageNumber(setPage);
-                                }}
-                            />
-                        </div>
+                        {centres && centres?.total > 0 && (
+                            <div className="mt-6 flex justify-between items-center">
+                                <Pagination
+                                    currentPage={
+                                        centres?.metaData?.currentPage || 1
+                                    }
+                                    totalPages={
+                                        centres?.metaData?.totalPages || 1
+                                    }
+                                    onPageChange={(setPage) => {
+                                        setPageNumber(setPage);
+                                    }}
+                                />
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
