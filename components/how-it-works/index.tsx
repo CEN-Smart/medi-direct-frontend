@@ -30,11 +30,11 @@ const steps = [
     },
     {
         icon: FileText,
-        title: 'Appointment Confirmation',
+        title: 'Get Results',
         description:
-            'Receive your appointment confirmation and plan your visit.',
+            'Receive your test results digitally and access them anytime from your dashboard.',
         details:
-            'Get a detailed confirmation with directions, contact information, and any preparation instructions.',
+            'Download your results securely and keep track of your health history in one place.',
     },
 ];
 
@@ -89,7 +89,7 @@ export function HowItWorks() {
             {/* Hero Section */}
             <section
                 ref={heroRef}
-                className="bg-gradient-to-br from-blue-50 to-green-50 py-20"
+                className="bg-linear-to-br from-blue-50 to-green-50 py-20"
             >
                 <div className="container mx-auto px-4">
                     <div className="text-center max-w-4xl mx-auto">
@@ -202,9 +202,8 @@ export function HowItWorks() {
                         Ready to Get Started?
                     </h2>
                     <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-                        Find diagnostic centres near you and book your tests
-                        instantly or create an account to manage your own
-                        centre.
+                        Join thousands of patients who trust MediDirect for
+                        their diagnostic needs.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link href="/search">
@@ -213,15 +212,6 @@ export function HowItWorks() {
                                 className="bg-white text-blue-600 hover:bg-gray-100"
                             >
                                 Find Centres Now
-                            </Button>
-                        </Link>
-                        <Link href="/auth/signup">
-                            <Button
-                                size="lg"
-                                variant="outline"
-                                className="border-white text-gray-500 hover:bg-white hover:text-blue-600"
-                            >
-                                Create Account
                             </Button>
                         </Link>
                     </div>
