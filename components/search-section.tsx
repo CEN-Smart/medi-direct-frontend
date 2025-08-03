@@ -84,7 +84,7 @@ export function SearchSection() {
                             >
                                 <SelectValue placeholder="Select test type" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="max-h-60 overflow-y-auto">
                                 {serviceTypes?.data?.serviceTypes?.map(
                                     (test) => (
                                         <SelectItem
