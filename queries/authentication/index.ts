@@ -4,6 +4,7 @@ import { clearLocalStorage, setToLocalStorage } from '@/helpers';
 import { tokenKey } from '@/lib/utils';
 import { LoginData, SignUp, UpdatePassword } from '@/schemas/auth';
 import { PersonalInfo } from '@/schemas/batch-update';
+import { ContactUs } from '@/schemas/contact-us-schema';
 import { apiClient } from '@/services/api';
 import { useUserValidation } from '@/state-management/validate-user';
 import { ErrorResponse, ErrorResponseMessage, GenericResponse } from '@/types';
@@ -225,6 +226,59 @@ export const useBatchUpdateUser = (
             toast.error(
                 error.response?.data.message ||
                     'Failed to update user information',
+            );
+        },
+        ...options,
+    });
+};
+
+// Contact Us
+const contactUs = async (
+    data: ContactUs,
+): Promise<GenericResponse<ErrorResponseMessage>> => {
+    const response = await apiClient.post({
+        url: '/contact-us',
+        body: data,
+        auth: false,
+    });
+    return response;
+};
+
+export const useContactUs = (
+    ref: React.RefObject<HTMLFormElement | null>,
+    setIsSubmitted?: (isSubmitted: boolean) => void,
+    options?: Omit<
+        UseMutationOptions<
+            GenericResponse<ErrorResponseMessage>,
+            ErrorResponse,
+            ContactUs,
+            unknown
+        >,
+        'mutationKey' | 'mutationFn'
+    >,
+) => {
+    return useMutation({
+        mutationFn: contactUs,
+        onSuccess: (data) => {
+            if (data.status === 'success') {
+                toast.success(
+                    typeof data.message === 'string'
+                        ? data.message
+                        : 'Message sent successfully',
+                );
+                // Reset form if ref is provided
+                if (ref.current) {
+                    ref.current.reset();
+                }
+                // Call setIsSubmitted if provided
+                if (setIsSubmitted) {
+                    setIsSubmitted(true);
+                }
+            }
+        },
+        onError: (error) => {
+            toast.error(
+                error.response?.data.message || 'Failed to send message',
             );
         },
         ...options,
