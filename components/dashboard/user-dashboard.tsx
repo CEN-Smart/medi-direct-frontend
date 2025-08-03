@@ -58,7 +58,8 @@ export function UserDashboard() {
                         My Dashboard
                     </h1>
                     <p className="text-gray-600">
-                        Manage your appointments, centres, and view test results
+                        Manage your appointments, centres, and profile settings
+                        here.
                     </p>
                 </div>
 
