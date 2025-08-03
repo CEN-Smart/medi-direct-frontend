@@ -4,7 +4,8 @@ import { useMemo } from 'react';
 
 import { cn } from '@/lib/utils';
 import { DiagnosticCenterResponse } from '@/types/diagnostic-center';
-import { Calendar, FileText, MapPin, Phone } from 'lucide-react';
+import { format } from 'date-fns';
+import { Calendar, Clock, FileText, MapPin, Phone } from 'lucide-react';
 
 import ConfirmBookingModal from '../confirm-booking-modal';
 import { BookingCardSkeleton } from '../skeletons/booking-card-skeleton';
@@ -106,6 +107,16 @@ export function DiagnosticCenterBookingCard({
                                             <FileText className="w-4 h-4" />
                                             <span className="capitalize">
                                                 {booking.serviceName ?? 'N/A'}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Clock className="w-4 h-4" />
+                                            <span>
+                                                Time Booked:{' '}
+                                                {format(
+                                                    booking.createdAt,
+                                                    'PPpp',
+                                                )}
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-2">
