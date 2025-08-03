@@ -3,20 +3,9 @@
 import Link from 'next/link';
 
 import { useEffect, useRef, useState } from 'react';
-import type React from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import { animations } from '@/lib/animations';
 import {
     CheckCircle,
@@ -29,29 +18,19 @@ import {
     Send,
 } from 'lucide-react';
 
+import { ContactUsForm } from './contact-us-form';
+
 export function Contact() {
     const heroRef = useRef<HTMLDivElement>(null);
     const formRef = useRef<HTMLDivElement>(null);
     const infoRef = useRef<HTMLDivElement>(null);
     const [isSubmitted, setIsSubmitted] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         if (heroRef.current) animations.pageEnter(heroRef.current);
         if (formRef.current) animations.fadeInOnScroll(formRef.current);
         if (infoRef.current) animations.fadeInOnScroll(infoRef.current);
     }, []);
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsLoading(true);
-
-        // Simulate form submission
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-
-        setIsLoading(false);
-        setIsSubmitted(true);
-    };
 
     const contactInfo = [
         {
@@ -191,117 +170,9 @@ export function Contact() {
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <form
-                                    onSubmit={handleSubmit}
-                                    className="space-y-6"
-                                >
-                                    <div className="grid md:grid-cols-2 gap-4">
-                                        <div>
-                                            <Label htmlFor="firstName">
-                                                First Name *
-                                            </Label>
-                                            <Input
-                                                id="firstName"
-                                                required
-                                                className="mt-1"
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label htmlFor="lastName">
-                                                Last Name *
-                                            </Label>
-                                            <Input
-                                                id="lastName"
-                                                required
-                                                className="mt-1"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <Label htmlFor="email">
-                                            Email Address *
-                                        </Label>
-                                        <Input
-                                            id="email"
-                                            type="email"
-                                            required
-                                            className="mt-1"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <Label htmlFor="phone">
-                                            Phone Number
-                                        </Label>
-                                        <Input
-                                            id="phone"
-                                            type="tel"
-                                            className="mt-1"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <Label htmlFor="subject">
-                                            Subject *
-                                        </Label>
-                                        <Select required>
-                                            <SelectTrigger className="mt-1">
-                                                <SelectValue placeholder="Select a subject" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="general">
-                                                    General Inquiry
-                                                </SelectItem>
-                                                <SelectItem value="technical">
-                                                    Technical Support
-                                                </SelectItem>
-                                                <SelectItem value="booking">
-                                                    Booking Assistance
-                                                </SelectItem>
-                                                <SelectItem value="partnership">
-                                                    Partnership Opportunity
-                                                </SelectItem>
-                                                <SelectItem value="feedback">
-                                                    Feedback
-                                                </SelectItem>
-                                                <SelectItem value="other">
-                                                    Other
-                                                </SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-
-                                    <div>
-                                        <Label htmlFor="message">
-                                            Message *
-                                        </Label>
-                                        <Textarea
-                                            id="message"
-                                            required
-                                            className="mt-1 min-h-[120px]"
-                                            placeholder="Please describe your inquiry in detail..."
-                                        />
-                                    </div>
-
-                                    <Button
-                                        type="submit"
-                                        className="w-full"
-                                        disabled={isLoading}
-                                    >
-                                        {isLoading ? (
-                                            <>
-                                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                                                Sending...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Send className="w-4 h-4 mr-2" />
-                                                Send Message
-                                            </>
-                                        )}
-                                    </Button>
-                                </form>
+                                <ContactUsForm
+                                    setIsSubmitted={setIsSubmitted}
+                                />
                             </CardContent>
                         </Card>
                     </div>
