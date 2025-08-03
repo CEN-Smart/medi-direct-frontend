@@ -117,7 +117,7 @@ export function SearchSection() {
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="State" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="max-h-60 overflow-y-auto z-[1002]">
                                 {statesData?.data.map((state) => (
                                     <SelectItem key={state} value={state}>
                                         {state}
@@ -148,7 +148,7 @@ export function SearchSection() {
                             >
                                 <SelectValue placeholder="Select LGA" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="max-h-60 overflow-y-auto z-[1002]">
                                 {lgaData?.data.map((lga) => (
                                     <SelectItem key={lga} value={lga}>
                                         {lga}
@@ -175,7 +175,7 @@ export function SearchSection() {
                             <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Rating" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="max-h-60 overflow-y-auto z-[1002]">
                                 {ratings.map((rat) => (
                                     <SelectItem
                                         key={rat.value}
