@@ -2,8 +2,6 @@
 
 import { useEffect, useRef } from 'react';
 
-import { Footer } from '@/components/footer';
-import { Header } from '@/components/header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { animations } from '@/lib/animations';
 import {
@@ -100,8 +98,6 @@ export function Terms() {
 
     return (
         <div className="min-h-screen bg-white">
-            <Header />
-
             {/* Hero Section */}
             <section
                 ref={heroRef}
@@ -266,8 +262,6 @@ export function Terms() {
                     </div>
                 </div>
             </section>
-
-            <Footer />
         </div>
     );
 }

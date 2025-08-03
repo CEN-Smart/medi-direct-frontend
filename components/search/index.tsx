@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 
-import { Header } from '@/components/header';
 import { Card, CardContent } from '@/components/ui/card';
 import {
     Select,
@@ -73,8 +72,6 @@ export function GuestSearchPage() {
 
     return (
         <div className="bg-gray-50 min-h-screen">
-            <Header />
-
             <div className="mx-auto px-4 py-8 container">
                 <div className="mb-8">
                     <h1 className="mb-2 font-bold text-gray-900 text-3xl flex items-center gap-2">

@@ -1,14 +1,10 @@
 import { FeaturedCentres } from '@/components/featured-centres';
-import { Footer } from '@/components/footer';
-import { Header } from '@/components/header';
 import { HowItWorks } from '@/components/how-it-works';
 import { SearchSection } from '@/components/search-section';
 
 export function Home() {
     return (
         <div className="min-h-screen bg-white">
-            <Header />
-
             {/* Hero Section */}
             <section className="bg-linear-to-br from-blue-50 to-green-50 py-16">
                 <div className="container mx-auto px-4">
@@ -30,7 +26,6 @@ export function Home() {
 
             <HowItWorks />
             <FeaturedCentres />
-            <Footer />
         </div>
     );
 }

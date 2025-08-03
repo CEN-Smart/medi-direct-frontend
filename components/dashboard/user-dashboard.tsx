@@ -8,7 +8,6 @@ import { DiagnosticCenterBookingCard } from '@/components/diagnostic-center/book
 import { DiagnosticCenterCard } from '@/components/diagnostic-center/center-card';
 import { DiagnosticConfirmedBookingCard } from '@/components/diagnostic-center/confirmed-booking-card';
 import { UserProfileTab } from '@/components/diagnostic-center/profile-tab';
-import { Header } from '@/components/header';
 import { userDashboardTabs } from '@/docs';
 import { useTabState } from '@/hooks/use-url-state';
 import { cn } from '@/lib/utils';
@@ -50,8 +49,6 @@ export function UserDashboard() {
 
     return (
         <div className="bg-gray-50 min-h-screen">
-            <Header />
-
             <div className="mx-auto px-4 py-8 container">
                 <div className="mb-8">
                     <h1 className="mb-2 font-bold text-gray-900 text-3xl">

@@ -4,8 +4,6 @@ import Link from 'next/link';
 
 import { useEffect, useRef, useState } from 'react';
 
-import { Footer } from '@/components/footer';
-import { Header } from '@/components/header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -136,8 +134,6 @@ export function Pricing() {
 
     return (
         <div className="min-h-screen bg-white">
-            <Header />
-
             {/* Hero Section */}
             <section
                 ref={heroRef}
@@ -473,8 +469,6 @@ export function Pricing() {
                     </div>
                 </div>
             </section>
-
-            <Footer />
         </div>
     );
 }

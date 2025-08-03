@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Mail, MapPin, Phone } from 'lucide-react';
 
-import { Logo } from './logo';
+import { FormLogo } from './auth-forms/form-logo';
 
 const footerCompanyLinks = [
     { href: '/about', label: 'About Us' },
@@ -27,12 +27,14 @@ const footerForPatientsLinks = [
 export function Footer() {
     const pathname = usePathname();
     return (
-        <footer className="bg-gray-900 text-white py-12">
+        <footer className="bg-gray-900 text-white py-16">
             <div className="container mx-auto px-4">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     <div>
                         <div className="flex items-center space-x-2 mb-4">
-                            <Logo src="/logo-1.jpg" />
+                            <Link href="/" className="flex items-center">
+                                <FormLogo className="mx-0" />
+                            </Link>
                         </div>
                         <p className="text-gray-400 mb-4">
                             Connecting patients to quality diagnostic services

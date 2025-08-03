@@ -4,8 +4,6 @@ import Link from 'next/link';
 
 import { useEffect, useRef } from 'react';
 
-import { Footer } from '@/components/footer';
-import { Header } from '@/components/header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { animations } from '@/lib/animations';
@@ -88,8 +86,6 @@ export function About() {
 
     return (
         <div className="min-h-screen bg-white">
-            <Header />
-
             {/* Hero Section */}
             <section
                 ref={heroRef}
@@ -304,8 +300,6 @@ export function About() {
                     </div>
                 </div>
             </section>
-
-            <Footer />
         </div>
     );
 }

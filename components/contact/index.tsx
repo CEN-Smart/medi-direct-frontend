@@ -5,8 +5,6 @@ import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import type React from 'react';
 
-import { Footer } from '@/components/footer';
-import { Header } from '@/components/header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -109,7 +107,6 @@ export function Contact() {
     if (isSubmitted) {
         return (
             <div className="min-h-screen bg-white">
-                <Header />
                 <div className="py-20 flex items-center justify-center min-h-[60vh]">
                     <Card className="max-w-md mx-auto text-center">
                         <CardContent className="p-8">
@@ -127,15 +124,12 @@ export function Contact() {
                         </CardContent>
                     </Card>
                 </div>
-                <Footer />
             </div>
         );
     }
 
     return (
         <div className="min-h-screen bg-white">
-            <Header />
-
             {/* Hero Section */}
             <section
                 ref={heroRef}
@@ -398,8 +392,6 @@ export function Contact() {
                     </div>
                 </div>
             </div>
-
-            <Footer />
         </div>
     );
 }

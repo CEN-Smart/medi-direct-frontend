@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 
+import { Footer } from '@/components/footer';
+import { Header } from '@/components/header';
 import { cn } from '@/lib/utils';
 import { TanstackProviders } from '@/providers/tanstack-query';
 
@@ -101,7 +103,11 @@ export default function RootLayout({
                 suppressHydrationWarning
                 className={cn(`antialiased`, inter.className)}
             >
-                <TanstackProviders>{children}</TanstackProviders>
+                <TanstackProviders>
+                    <Header />
+                    {children}
+                    <Footer />
+                </TanstackProviders>
             </body>
         </html>
     );
