@@ -118,21 +118,53 @@ export function TopRatedCenterCard({
                                             <div className="flex items-start gap-2">
                                                 <div className="flex flex-col w-full">
                                                     {center.operatingHours.map(
-                                                        (hour) => (
-                                                            <div
-                                                                key={hour.day}
-                                                                className="flex items-center gap-1 justify-between w-full"
-                                                            >
-                                                                <span className="font-medium capitalize flex items-center gap-1">
-                                                                    <Clock className="w-4 h-4 text-gray-400" />
-                                                                    {hour.day}:
-                                                                </span>{' '}
-                                                                <span>
-                                                                    {hour.from}{' '}
-                                                                    - {hour.to}
-                                                                </span>
-                                                            </div>
-                                                        ),
+                                                        (hour) => {
+                                                            const { from, to } =
+                                                                hour;
+                                                            const amPmFormat = (
+                                                                time: string,
+                                                            ) => {
+                                                                const [
+                                                                    hours,
+                                                                    minutes,
+                                                                ] =
+                                                                    time.split(
+                                                                        ':',
+                                                                    );
+                                                                const amPm =
+                                                                    +hours >= 12
+                                                                        ? 'PM'
+                                                                        : 'AM';
+                                                                const formattedHours =
+                                                                    +hours %
+                                                                        12 ||
+                                                                    12;
+                                                                return `${formattedHours}:${minutes} ${amPm}`;
+                                                            };
+                                                            return (
+                                                                <div
+                                                                    key={
+                                                                        hour.day
+                                                                    }
+                                                                    className="flex items-center justify-between gap-2"
+                                                                >
+                                                                    <div className="flex items-center gap-1">
+                                                                        <Clock className="w-4 h-4 text-gray-400" />
+                                                                        <span>
+                                                                            {
+                                                                                hour.day
+                                                                            }
+                                                                            :
+                                                                        </span>
+                                                                    </div>
+                                                                    <span>
+                                                                        {hour.open
+                                                                            ? `${amPmFormat(from)} - ${amPmFormat(to)}`
+                                                                            : 'Closed'}
+                                                                    </span>
+                                                                </div>
+                                                            );
+                                                        },
                                                     )}
                                                 </div>
                                             </div>

@@ -210,3 +210,44 @@ export type SingleCenterServiceResponse = {
         };
     };
 };
+
+export type CreateDiagnosticCenterPayload = {
+    name: string;
+    email: string;
+    phone: string;
+    emergencyPhone: string;
+    address: string;
+    lga: string;
+    state: string;
+    latitude: number | undefined;
+    longitude: number | undefined;
+    description: string;
+    website: string;
+    licenseDocument: string;
+    cacDocument: string;
+    establishedYear: number | '';
+    totalStaff: number | '';
+    operatingHours: {
+        to: string;
+        day: string;
+        from: string;
+        open: boolean;
+    }[];
+    additionalFeatures: string[];
+    images: string[];
+    logo: string;
+};
+
+export type LocationPayload = {
+    address: string;
+};
+export type LocationResponse = {
+    status: 'success' | 'fail';
+    message: string;
+    data: {
+        location: {
+            lat: number;
+            lng: number;
+        };
+    };
+};

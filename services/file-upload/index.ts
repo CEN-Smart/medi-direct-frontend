@@ -1,12 +1,9 @@
-import { useLocalStorage } from '@/hooks/use-local-storage';
-import { fileUploadKey } from '@/lib/utils';
-import { allKeysToValidate } from '@/queries/keys';
+import { useCreateDiagnosticCenterStore } from '@/stores/diagnostic-center';
 import type { FileUploadResponse } from '@/types';
 import {
     UseMutationOptions,
     useMutation,
     useMutationState,
-    useQueryClient,
 } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { toast } from 'sonner';
@@ -14,34 +11,53 @@ import { toast } from 'sonner';
 import { fileUpload } from './actions';
 import fileUploadKeys from './file-upload-keys';
 
+export type UseCase =
+    | 'Medical License'
+    | 'CAC Document'
+    | 'Center Logo'
+    | 'Center Images'
+    | null;
+
 export function useFileUpload(
-    file: File,
-    setFileUpload?: (isFileUpload: boolean) => void,
-    isRefresh?: boolean,
+    file: File | File[] | null,
+    useCase: UseCase,
     options?: UseMutationOptions<
         FileUploadResponse,
         AxiosError & { response?: { data: { message: string } } },
-        File,
-        unknown
+        File | File[] | null
     >,
 ) {
-    const { setValue } = useLocalStorage<string[]>(fileUploadKey);
+    const { setCenterData, centerData } = useCreateDiagnosticCenterStore();
     const hash = [fileUploadKeys.create];
-    const queryClient = useQueryClient();
     const uploadFile = useMutation({
         mutationKey: hash,
         mutationFn: () => fileUpload(file),
         onSuccess(data) {
             if (data.data.status === 'success') {
                 toast.success('File uploaded successfully');
-                setValue(data.data.data.urls);
-                if (setFileUpload) {
-                    setFileUpload(true);
+                const urls = data.data.data.urls;
+                if (useCase === 'Medical License') {
+                    setCenterData({
+                        ...centerData,
+                        licenseDocument: urls[0],
+                    });
                 }
-                if (isRefresh) {
-                    window.location.reload();
-                    allKeysToValidate.forEach((key) => {
-                        queryClient.invalidateQueries({ queryKey: [key] });
+                if (useCase === 'CAC Document') {
+                    setCenterData({
+                        ...centerData,
+                        cacDocument: urls[0],
+                    });
+                }
+                if (useCase === 'Center Logo') {
+                    setCenterData({
+                        ...centerData,
+                        logo: urls[0],
+                    });
+                }
+                if (useCase === 'Center Images') {
+                    setCenterData({
+                        ...centerData,
+                        images: [...(centerData.images || []), ...urls],
                     });
                 }
             } else if (data.data.status === 'fail') {

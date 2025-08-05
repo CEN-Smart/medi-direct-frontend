@@ -11,6 +11,7 @@ export type ErrorResponse = AxiosError & {
 export type FileUploadResponse = {
     data: {
         status: 'success' | 'fail';
+        message: string;
         data: {
             urls: string[]; // Array of URLs for the uploaded files
         };

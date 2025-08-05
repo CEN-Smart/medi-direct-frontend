@@ -1,8 +1,11 @@
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const serviceTypeSchema = z.object({
     name: z
-        .string({ required_error: 'Name is required' })
+        .string({
+            error: (issue) =>
+                issue.input === undefined ? 'Name is required' : undefined,
+        })
         .min(1, 'Name cannot be empty'),
     description: z.string().optional(),
 });

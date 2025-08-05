@@ -4,9 +4,17 @@ import { useMemo } from 'react';
 
 import { cn } from '@/lib/utils';
 import { DiagnosticCenterResponse } from '@/types/diagnostic-center';
-import { BarChart3, FileText, MapPin, Settings, Users } from 'lucide-react';
+import {
+    BarChart3,
+    FileText,
+    MapPin,
+    Plus,
+    Settings,
+    Users,
+} from 'lucide-react';
 
 import { CentreAnalyticsModal } from '../centre-analytics-modal';
+import { CreateCentreModal } from '../create-centre-modal';
 import { ManageServicesModal } from '../manage-services-modal';
 import { Pagination } from '../pagination';
 import { DiagnosticCenterCardSkeleton } from '../skeletons/diagnostic-center-card-skeleton';
@@ -53,12 +61,12 @@ export function DiagnosticCenterCard({
                             Manage your diagnostic centres and services
                         </p>
                     </div>
-                    {/* <CreateCentreModal>
+                    <CreateCentreModal>
                         <Button className="bg-green-600 hover:bg-green-700">
                             <Plus className="w-4 h-4 mr-2" />
                             Add New Centre
                         </Button>
-                    </CreateCentreModal> */}
+                    </CreateCentreModal>
                 </div>
                 {!pending &&
                     !isError &&

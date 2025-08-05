@@ -74,6 +74,21 @@ const reviewCategories = [
     },
 ];
 
+const amenities = [
+    'Parking Available',
+    'Wheelchair Accessible',
+    'Air Conditioning',
+    'WiFi Available',
+    'Waiting Area',
+    'Pharmacy On-site',
+    'Emergency Services',
+    'Home Service Available',
+    'Online Results',
+    'Insurance Accepted',
+    '24/7 Service',
+    'Laboratory On-site',
+];
+
 const resultDeliveryTimes = [
     'Same day',
     '24 hours',
@@ -92,4 +107,5 @@ export {
     resultDeliveryTimes,
     reviewCategories,
     userDashboardTabs,
+    amenities,
 };

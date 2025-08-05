@@ -1,4 +1,5 @@
 import { apiClient } from '@/services/api';
+import { useCreateDiagnosticCenterStore } from '@/stores/diagnostic-center';
 import {
     useCancelBookingStore,
     useRescheduleBookingStore,
@@ -10,8 +11,11 @@ import {
 } from '@/types/bookings';
 import {
     CreateCenterServicePayload,
+    CreateDiagnosticCenterPayload,
     DiagnosticCenterResponse,
     DiagnosticCenterStatus,
+    LocationPayload,
+    LocationResponse,
     SingleCenterServiceResponse,
 } from '@/types/diagnostic-center';
 import {
@@ -28,6 +32,7 @@ import {
     bookingsKeys,
     centerServiceKeys,
     diagnosticCenterKeys,
+    locationKeys,
 } from '../keys';
 
 // Get all diagnostic centers
@@ -410,6 +415,112 @@ export const useService = (
     return useQuery({
         queryKey: hash,
         queryFn: () => getService(centerId, serviceId ? serviceId : undefined),
+        ...options,
+    });
+};
+
+// Get All Locations
+export const getLocations = async (
+    data: LocationPayload,
+): Promise<LocationResponse> => {
+    const response = await apiClient.post({
+        url: '/geo-coding',
+        auth: true,
+        body: data,
+    });
+    return response;
+};
+
+// Custom hook to fetch locations to mutate the location data
+export const useLocations = (
+    setStep?: (step: number) => void,
+    options?: Omit<
+        UseMutationOptions<
+            LocationResponse,
+            ErrorResponse,
+            LocationPayload,
+            unknown
+        >,
+        'queryKey' | 'queryFn'
+    >,
+) => {
+    const queryClient = useQueryClient();
+    const { setCenterData, centerData } = useCreateDiagnosticCenterStore();
+    return useMutation({
+        mutationFn: getLocations,
+        mutationKey: [locationKeys.create],
+        onSuccess: (data) => {
+            if (data.status === 'success') {
+                allKeysToValidate.forEach((key) => {
+                    queryClient.invalidateQueries({ queryKey: [key] });
+                });
+                toast.success(data.message);
+                if (setStep) {
+                    setStep(3);
+                }
+                setCenterData({
+                    ...centerData,
+                    latitude: Number(data.data.location.lat),
+                    longitude: Number(data.data.location.lng),
+                });
+            }
+        },
+        onError: (error) => {
+            toast.error(
+                error.response?.data.message || 'Failed to fetch locations',
+            );
+        },
+        ...options,
+    });
+};
+
+// Create Diagnostic Center /center
+export const createDiagnosticCenter = async (
+    payload: CreateDiagnosticCenterPayload,
+): Promise<GenericResponse<void>> => {
+    const response = await apiClient.post({
+        url: '/centre',
+        body: payload,
+        auth: true,
+    });
+    return response;
+};
+
+export const useCreateDiagnosticCenter = (
+    setIsOpen?: (open: boolean) => void,
+    options?: Omit<
+        UseMutationOptions<
+            GenericResponse<void>,
+            ErrorResponse,
+            CreateDiagnosticCenterPayload,
+            unknown
+        >,
+        'mutationFn' | 'mutationKey'
+    >,
+) => {
+    const queryClient = useQueryClient();
+    const { clearCenterData } = useCreateDiagnosticCenterStore();
+    return useMutation({
+        mutationFn: createDiagnosticCenter,
+        mutationKey: [diagnosticCenterKeys.create],
+        onSuccess: (data) => {
+            if (data.status === 'success') {
+                allKeysToValidate.forEach((key) => {
+                    queryClient.invalidateQueries({ queryKey: [key] });
+                });
+                clearCenterData();
+                toast.success(data.message);
+                if (setIsOpen) {
+                    setIsOpen(false);
+                }
+            }
+        },
+        onError: (error) => {
+            toast.error(
+                error.response?.data.message ||
+                    'Failed to create diagnostic center',
+            );
+        },
         ...options,
     });
 };

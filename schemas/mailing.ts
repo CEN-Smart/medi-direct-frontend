@@ -1,66 +1,78 @@
-import { z } from "zod";
+import { z } from 'zod/v4';
 
 export const sendMailSchema = z.object({
-  email: z
-    .string({
-      required_error: "Email is required",
-    })
-    .email({
-      message: "Invalid email address",
-    })
-    .trim(),
+    email: z
+        .email({
+            error: (issue) =>
+                issue.input === undefined ? 'Email is required' : undefined,
+        })
+        .trim(),
 });
 
 export const confirmMailSchema = z.object({
-  email: z
-    .string({
-      required_error: "Email is required",
-    })
-    .email({
-      message: "Invalid email address",
-    })
-    .trim(),
-  token: z
-    .string({
-      required_error: "Token is required",
-    })
-    .trim()
-    .min(6, { message: "Token must be at least 6 characters long" })
-    .max(6, { message: "Token must be at most 6 characters long" }),
+    email: z
+        .email({
+            error: (issue) =>
+                issue.input === undefined ? 'Email is required' : undefined,
+        })
+        .trim(),
+    token: z
+        .string({
+            error: (issue) =>
+                issue.input === undefined ? 'Token is required' : undefined,
+        })
+        .trim()
+        .min(6, {
+            error: 'Token must be at least 6 characters long',
+        })
+        .max(6, {
+            error: 'Token must be at most 6 characters long',
+        }),
 });
 
 export const resetPasswordSchema = z.object({
-  // email, token and new_password are required for resetting password
-  email: z
-    .string({
-      required_error: "Email is required",
-    })
-    .email({
-      message: "Invalid email address",
-    })
-    .trim(),
-  token: z
-    .string({
-      required_error: "Token is required",
-    })
-    .trim()
-    .min(6, { message: "Token must be at least 6 characters long" })
-    .max(6, { message: "Token must be at most 6 characters long" }),
-  newPassword: z
-    .string({
-      required_error: "New password is required",
-    })
-    .trim()
-    .min(8, { message: "New password must be at least 8 characters long" })
-    .max(100, { message: "New password must be at most 100 characters long" }),
+    // email, token and new_password are required for resetting password
+    email: z
+        .email({
+            error: (issue) =>
+                issue.input === undefined ? 'Email is required' : undefined,
+        })
+        .trim(),
+    token: z
+        .string({
+            error: (issue) =>
+                issue.input === undefined ? 'Token is required' : undefined,
+        })
+        .trim()
+        .min(6, {
+            error: 'Token must be at least 6 characters long',
+        })
+        .max(6, {
+            error: 'Token must be at most 6 characters long',
+        }),
+    newPassword: z
+        .string({
+            error: (issue) =>
+                issue.input === undefined
+                    ? 'New password is required'
+                    : undefined,
+        })
+        .trim()
+        .min(8, {
+            error: 'New password must be at least 8 characters long',
+        })
+        .max(100, {
+            error: 'New password must be at most 100 characters long',
+        }),
 });
 
 export const registrationCodeSchema = z.object({
-  code: z
-    .string({
-      required_error: "Code is required",
-    })
-    .min(1, "Code is required"),
+    code: z
+        .string({
+            error: (issue) =>
+                issue.input === undefined ? 'Code is required' : undefined,
+        })
+        .min(1, 'Code is required'),
 });
 export type RegistrationCode = z.infer<typeof registrationCodeSchema>;
 

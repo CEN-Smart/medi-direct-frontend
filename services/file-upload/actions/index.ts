@@ -4,10 +4,16 @@ import axios from 'axios';
 
 // /generic/file-upload
 
-async function fileUpload(file: File): Promise<FileUploadResponse> {
+async function fileUpload(
+    file: File | File[] | null,
+): Promise<FileUploadResponse> {
     const formData = new FormData();
-    formData.append('files', file);
-    return await axios.post(`${baseUrl}/image-upload`, formData, {
+    if (Array.isArray(file)) {
+        file.forEach((f) => formData.append('files', f as Blob));
+    } else {
+        formData.append('files', file as Blob);
+    }
+    return await axios.post(`${baseUrl}/upload-images`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },

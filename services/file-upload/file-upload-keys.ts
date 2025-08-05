@@ -1,9 +1,9 @@
-import { getQueryKeys } from "@/helpers/query-keys";
+import { getQueryKeys } from '@/helpers/query-keys';
 
-const namespace = "file-upload";
+const namespace = 'file-upload';
 
 const fileUploadKeys = {
-  ...getQueryKeys(namespace),
+    ...getQueryKeys(namespace),
 };
 
 export default fileUploadKeys;

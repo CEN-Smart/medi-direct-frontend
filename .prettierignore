@@ -5,7 +5,6 @@
  .idea
  coverage
  .prettierignore
- .stylelintignore
  .eslintignore
  stories
  storybook-static

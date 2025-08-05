@@ -12,6 +12,7 @@ export const operatingHoursKeys = getQueryKeys('operating-hours');
 export const bookingsKeys = getQueryKeys('bookings');
 export const reviewKeys = getQueryKeys('review');
 export const centerServiceKeys = getQueryKeys('center-service');
+export const locationKeys = getQueryKeys('location');
 
 // All keys to validate for the queries
 export const allKeysToValidate = [
@@ -109,4 +110,12 @@ export const allKeysToValidate = [
     centerServiceKeys.update,
     centerServiceKeys.delete,
     centerServiceKeys.patch,
+
+    // Location Keys
+    locationKeys.read,
+    locationKeys.readOne,
+    locationKeys.create,
+    locationKeys.update,
+    locationKeys.delete,
+    locationKeys.patch,
 ];
