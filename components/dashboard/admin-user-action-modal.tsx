@@ -35,7 +35,10 @@ type Props = {
     children?: React.ReactNode;
 };
 
-export function AdminUserActionModal({ selectedUser, children }: Props) {
+export function AdminUserActionModal({
+    selectedUser,
+    children,
+}: Readonly<Props>) {
     const [showUserDetails, setShowUserDetails] = useState(false);
     const {
         data: userDetails,
@@ -66,7 +69,7 @@ export function AdminUserActionModal({ selectedUser, children }: Props) {
                 )}
             </DialogTrigger>
 
-            <DialogContent className="sm:max-w-2xl px-0">
+            <DialogContent className="sm:max-w-2xl px-0 overflow-hidden">
                 <DialogHeader className="px-6">
                     <DialogTitle>User Details</DialogTitle>
                 </DialogHeader>
@@ -76,7 +79,7 @@ export function AdminUserActionModal({ selectedUser, children }: Props) {
 
                 {selectedUser && (
                     <Tabs defaultValue="profile" className="space-y-4">
-                        <TabsList className="grid grid-cols-3 w-full">
+                        <TabsList className="px-6 w-full">
                             <TabsTrigger value="profile">Profile</TabsTrigger>
                             <TabsTrigger value="centres">Centres</TabsTrigger>
                             <TabsTrigger value="actions">Actions</TabsTrigger>

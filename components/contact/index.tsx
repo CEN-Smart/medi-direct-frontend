@@ -139,7 +139,7 @@ export function Contact() {
                         <div className="grid md:grid-cols-3 gap-8">
                             {supportOptions.map((option, index) => (
                                 <Card
-                                    key={index}
+                                    key={`${option.title}-${index}`}
                                     className="text-center hover:shadow-lg transition-shadow duration-300"
                                 >
                                     <CardContent className="p-6">
@@ -193,7 +193,7 @@ export function Contact() {
                         <div className="space-y-6">
                             {contactInfo.map((info, index) => (
                                 <Card
-                                    key={index}
+                                    key={`${info.title}-${index}`}
                                     className="hover:shadow-lg transition-shadow duration-300"
                                 >
                                     <CardContent className="p-6">
@@ -206,7 +206,7 @@ export function Contact() {
                                                 {info.details.map(
                                                     (detail, detailIndex) => (
                                                         <p
-                                                            key={detailIndex}
+                                                            key={`${detail}-${detailIndex}`}
                                                             className="text-gray-700 font-medium"
                                                         >
                                                             {detail}

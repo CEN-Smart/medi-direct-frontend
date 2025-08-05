@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import { useEffect, useRef, useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
@@ -219,7 +221,7 @@ const categories = [
     { name: 'Emergency Care', icon: Phone, color: 'bg-red-600' },
 ];
 
-export function FAQ() {
+export function Faq() {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
@@ -300,12 +302,12 @@ export function FAQ() {
                         <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
                             {`Find answers to common questions about MediDirect.
                             Can't find what you're looking for?`}
-                            <a
+                            <Link
                                 href="/contact"
                                 className="text-blue-600 hover:text-blue-700"
                             >
                                 Contact our support team
-                            </a>
+                            </Link>
                             .
                         </p>
 
