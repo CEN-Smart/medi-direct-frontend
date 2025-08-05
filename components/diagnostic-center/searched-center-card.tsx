@@ -26,7 +26,7 @@ export function SearchedCenterCard({
     isError,
     isPending,
     errorMessage,
-}: Props) {
+}: Readonly<Props>) {
     const centersWithServicesAndReviews = useMemo(() => {
         const allData = centers?.data.centres.flatMap((center) => {
             return {

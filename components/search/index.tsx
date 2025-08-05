@@ -171,7 +171,10 @@ export function GuestSearchPage() {
                                     </div>
 
                                     <div className="space-y-1">
-                                        <label className="text-sm font-medium text-gray-700">
+                                        <label
+                                            className="text-sm font-medium text-gray-700"
+                                            htmlFor="lga-select"
+                                        >
                                             Local Government
                                         </label>
                                         {isLGAError && (
@@ -186,7 +189,10 @@ export function GuestSearchPage() {
                                             }
                                             disabled={pendingLGA || !state}
                                         >
-                                            <SelectTrigger className="w-full">
+                                            <SelectTrigger
+                                                className="w-full"
+                                                id="lga-select"
+                                            >
                                                 <SelectValue placeholder="Select LGA" />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -203,7 +209,10 @@ export function GuestSearchPage() {
                                     </div>
 
                                     <div className="space-y-1 ">
-                                        <label className="text-sm font-medium text-gray-700">
+                                        <label
+                                            className="text-sm font-medium text-gray-700"
+                                            htmlFor="rating-select"
+                                        >
                                             Rating
                                         </label>
                                         <Select
@@ -217,7 +226,10 @@ export function GuestSearchPage() {
                                             }}
                                             disabled={pendingLGA || !state}
                                         >
-                                            <SelectTrigger className="w-full">
+                                            <SelectTrigger
+                                                className="w-full"
+                                                id="rating-select"
+                                            >
                                                 <SelectValue placeholder="Rating" />
                                             </SelectTrigger>
                                             <SelectContent>

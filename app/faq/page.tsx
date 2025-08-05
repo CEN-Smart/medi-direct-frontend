@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 
-import { FAQ } from '@/components/faq';
+import { Faq } from '@/components/faq';
 
 export const metadata: Metadata = {
     title: 'FAQ - Medi Direct',
@@ -66,7 +66,7 @@ export const metadata: Metadata = {
 };
 
 const FAQPage = () => {
-    return <FAQ />;
+    return <Faq />;
 };
 
 export default FAQPage;

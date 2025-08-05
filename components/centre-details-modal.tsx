@@ -32,7 +32,7 @@ interface CentreDetailsModalProps {
 export function CentreDetailsModal({
     centre,
     children,
-}: CentreDetailsModalProps) {
+}: Readonly<CentreDetailsModalProps>) {
     const [isOpen, setIsOpen] = useState(false);
     const [activeTab, setActiveTab] = useState('services');
 
@@ -109,23 +109,37 @@ export function CentreDetailsModal({
                             </div>
 
                             <div className=" text-gray-600">
-                                <div>
-                                    {centre?.operatingHours.map((hour) => (
-                                        <div
-                                            key={hour.day}
-                                            className="flex items-center gap-2"
-                                        >
-                                            <Clock className="w-4 h-4" />
-                                            <span className="flex items-center gap-1 w-full justify-between">
-                                                <span className="font-semibold">
-                                                    {hour.day}:
-                                                </span>{' '}
-                                                <span>
-                                                    {hour.from} - {hour.to}
+                                <div className="flex flex-col w-full">
+                                    {centre?.operatingHours.map((hour) => {
+                                        const { from, to } = hour;
+                                        const amPmFormat = (time: string) => {
+                                            const [hours, minutes] =
+                                                time.split(':');
+                                            const amPm =
+                                                +hours >= 12 ? 'PM' : 'AM';
+                                            const formattedHours =
+                                                +hours % 12 || 12;
+                                            return `${formattedHours}:${minutes} ${amPm}`;
+                                        };
+                                        return (
+                                            <div
+                                                key={hour.day}
+                                                className="flex items-center justify-between gap-2"
+                                            >
+                                                <div className="flex items-center gap-1">
+                                                    <Clock className="w-4 h-4 text-gray-400" />
+                                                    <span className="text-gray-600 text-sm font-semibold">
+                                                        {hour.day}:
+                                                    </span>
+                                                </div>
+                                                <span className="text-gray-600 text-sm">
+                                                    {hour.open
+                                                        ? `${amPmFormat(from)} - ${amPmFormat(to)}`
+                                                        : 'Closed'}
                                                 </span>
-                                            </span>
-                                        </div>
-                                    ))}
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         </div>
@@ -158,25 +172,36 @@ export function CentreDetailsModal({
                                     Available Services (
                                     {centerData?.data.centre.services.length})
                                 </h3>
-                                {isCentrePending ? (
-                                    <div className="space-y-4">
-                                        <Skeleton className="h-6 w-1/3" />
-                                        <Skeleton className="h-6 w-full" />
-                                        <Skeleton className="h-6 w-full" />
-                                        <Skeleton className="h-6 w-full" />
-                                    </div>
-                                ) : isCentreError ? (
-                                    <p>
-                                        Error loading services:{' '}
-                                        {centerError.message}
-                                    </p>
-                                ) : centerData?.data.centre.services.length ===
-                                  0 ? (
-                                    <NoDataFound message="No services available for this centre." />
-                                ) : (
-                                    centerData?.data.centre.services.map(
-                                        (service, index) => (
-                                            <Card key={index}>
+                                {(() => {
+                                    if (isCentrePending) {
+                                        return (
+                                            <div className="space-y-4">
+                                                <Skeleton className="h-6 w-1/3" />
+                                                <Skeleton className="h-6 w-full" />
+                                                <Skeleton className="h-6 w-full" />
+                                                <Skeleton className="h-6 w-full" />
+                                            </div>
+                                        );
+                                    }
+                                    if (isCentreError) {
+                                        return (
+                                            <p>
+                                                Error loading services:{' '}
+                                                {centerError.message}
+                                            </p>
+                                        );
+                                    }
+                                    if (
+                                        centerData?.data.centre.services
+                                            .length === 0
+                                    ) {
+                                        return (
+                                            <NoDataFound message="No services available for this centre." />
+                                        );
+                                    }
+                                    return centerData?.data.centre.services.map(
+                                        (service) => (
+                                            <Card key={service.id}>
                                                 <CardContent className="p-4">
                                                     <div className="flex justify-between items-center">
                                                         <div>
@@ -204,30 +229,41 @@ export function CentreDetailsModal({
                                                 </CardContent>
                                             </Card>
                                         ),
-                                    )
-                                )}
+                                    );
+                                })()}
                             </TabsContent>
 
                             <TabsContent value="reviews" className="space-y-4">
                                 <h3 className="mb-4 font-semibold text-lg">
                                     Patient Reviews
                                 </h3>
-                                {isCentrePending ? (
-                                    <div className="space-y-4">
-                                        <Skeleton className="h-6 w-1/3" />
-                                        <Skeleton className="h-6 w-full" />
-                                        <Skeleton className="h-6 w-full" />
-                                    </div>
-                                ) : isCentreError ? (
-                                    <p>
-                                        Error loading reviews:{' '}
-                                        {centerError.message}
-                                    </p>
-                                ) : centerData?.data.centre.reviews.length ===
-                                  0 ? (
-                                    <NoDataFound message="No reviews available for this centre." />
-                                ) : (
-                                    centerData?.data.centre.reviews.map(
+                                {(() => {
+                                    if (isCentrePending) {
+                                        return (
+                                            <div className="space-y-4">
+                                                <Skeleton className="h-6 w-1/3" />
+                                                <Skeleton className="h-6 w-full" />
+                                                <Skeleton className="h-6 w-full" />
+                                            </div>
+                                        );
+                                    }
+                                    if (isCentreError) {
+                                        return (
+                                            <p>
+                                                Error loading reviews:{' '}
+                                                {centerError.message}
+                                            </p>
+                                        );
+                                    }
+                                    if (
+                                        centerData?.data.centre.reviews
+                                            .length === 0
+                                    ) {
+                                        return (
+                                            <NoDataFound message="No reviews available for this centre." />
+                                        );
+                                    }
+                                    return centerData?.data.centre.reviews.map(
                                         (review) => (
                                             <Card key={review.id}>
                                                 <CardContent className="p-4">
@@ -244,11 +280,12 @@ export function CentreDetailsModal({
                                                                         review.rating,
                                                                     ),
                                                                 ].map(
-                                                                    (_, i) => (
+                                                                    (
+                                                                        _,
+                                                                        starIdx,
+                                                                    ) => (
                                                                         <Star
-                                                                            key={
-                                                                                i
-                                                                            }
+                                                                            key={`${review.id}-star-${starIdx}`}
                                                                             className="fill-yellow-400 w-4 h-4 text-yellow-400"
                                                                         />
                                                                     ),
@@ -270,8 +307,8 @@ export function CentreDetailsModal({
                                                 </CardContent>
                                             </Card>
                                         ),
-                                    )
-                                )}
+                                    );
+                                })()}
                             </TabsContent>
 
                             <TabsContent value="info" className="space-y-4">

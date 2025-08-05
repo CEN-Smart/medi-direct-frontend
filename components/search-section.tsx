@@ -64,7 +64,10 @@ export function SearchSection() {
             <CardContent className="px-1 py-2 sm:px-4 sm:py-3">
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
                     <div className="space-y-1 w-full">
-                        <label className="text-sm font-medium text-gray-700">
+                        <label
+                            className="text-sm font-medium text-gray-700"
+                            htmlFor="service-select"
+                        >
                             Test Type
                         </label>
                         {isServiceError && (
@@ -78,6 +81,7 @@ export function SearchSection() {
                             onValueChange={(value) => setServiceType(value)}
                         >
                             <SelectTrigger
+                                id="service-select"
                                 className={cn(`w-full`, {
                                     'animate-pulse': pendingServices,
                                 })}
@@ -101,7 +105,10 @@ export function SearchSection() {
                     </div>
 
                     <div className="space-y-1 w-full">
-                        <label className="text-sm font-medium text-gray-700">
+                        <label
+                            className="text-sm font-medium text-gray-700"
+                            htmlFor="state-select"
+                        >
                             State
                         </label>
                         {isStateError && (
@@ -114,7 +121,7 @@ export function SearchSection() {
                             onValueChange={(value) => setState(value)}
                             disabled={pendingStates}
                         >
-                            <SelectTrigger className="w-full">
+                            <SelectTrigger className="w-full" id="state-select">
                                 <SelectValue placeholder="State" />
                             </SelectTrigger>
                             <SelectContent className="max-h-60 overflow-y-auto z-[1002]">
@@ -128,7 +135,10 @@ export function SearchSection() {
                     </div>
 
                     <div className="space-y-1 w-full">
-                        <label className="text-sm font-medium text-gray-700">
+                        <label
+                            htmlFor="lga-select"
+                            className="text-sm font-medium text-gray-700"
+                        >
                             LGA
                         </label>
                         {isLGAError && (
@@ -141,6 +151,7 @@ export function SearchSection() {
                             disabled={pendingLGA || !state}
                         >
                             <SelectTrigger
+                                id="lga-select"
                                 disabled={pendingLGA || !state}
                                 className={cn(`w-full`, {
                                     'animate-pulse': pendingLGA,
@@ -159,7 +170,10 @@ export function SearchSection() {
                     </div>
 
                     <div className="space-y-1 w-full">
-                        <label className="text-sm font-medium text-gray-700">
+                        <label
+                            className="text-sm font-medium text-gray-700"
+                            htmlFor="rating-select"
+                        >
                             Rating
                         </label>
                         <Select
@@ -172,7 +186,10 @@ export function SearchSection() {
                                 setRating(Number(value));
                             }}
                         >
-                            <SelectTrigger className="w-full">
+                            <SelectTrigger
+                                className="w-full"
+                                id="rating-select"
+                            >
                                 <SelectValue placeholder="Rating" />
                             </SelectTrigger>
                             <SelectContent className="max-h-60 overflow-y-auto z-[1002]">

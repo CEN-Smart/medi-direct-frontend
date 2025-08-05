@@ -33,13 +33,28 @@ export function FeaturedCentres() {
         isError: isTopRatedError,
         error: errorTopRated,
     } = useTopRatedCenters(state, lga);
+    // Extract heading text to avoid nested ternary
+    let heading = 'Featured centers';
+    if (state) {
+        heading += ' in ' + state;
+        if (lga) {
+            heading += ',';
+        }
+    }
+    if (lga) {
+        heading += ' ' + lga;
+    }
+
     return (
         <section className="py-16 bg-gray-50">
             <div className="container mx-auto px-4">
                 <div className="grid grid-cols-1 md:grid-cols-5 items-end justify-between gap-4 mb-5">
                     <div className="flex gap-4 items-center w-full col-span-1 md:col-span-2">
                         <div className="space-y-1 w-full">
-                            <label className="text-sm font-medium text-gray-700">
+                            <label
+                                className="text-sm font-medium text-gray-700"
+                                htmlFor="state-select"
+                            >
                                 State
                             </label>
                             {isStateError && (
@@ -52,7 +67,10 @@ export function FeaturedCentres() {
                                 disabled={pendingStates}
                                 onValueChange={(value) => setState(value)}
                             >
-                                <SelectTrigger className="w-full">
+                                <SelectTrigger
+                                    className="w-full"
+                                    id="state-select"
+                                >
                                     <SelectValue placeholder="State" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -65,7 +83,10 @@ export function FeaturedCentres() {
                             </Select>
                         </div>
                         <div className="space-y-1 w-full">
-                            <label className="text-sm font-medium text-gray-700">
+                            <label
+                                className="text-sm font-medium text-gray-700"
+                                htmlFor="lga-select"
+                            >
                                 LGA
                             </label>
                             {isLGAError && (
@@ -77,7 +98,11 @@ export function FeaturedCentres() {
                                 disabled={pendingLGA || !state}
                                 onValueChange={(value) => setLga(value)}
                             >
-                                <SelectTrigger className="w-full">
+                                <SelectTrigger
+                                    className="w-full"
+                                    id="lga-select"
+                                    disabled={pendingLGA || !state}
+                                >
                                     <SelectValue placeholder="Select LGA" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -91,7 +116,7 @@ export function FeaturedCentres() {
                         </div>
                     </div>
                     <h2 className="text-2xl text-right w-full font-bold text-gray-900 col-span-1 md:col-span-3">
-                        {`Featured centers ${!state ? '' : 'in'} ${state ? `${state},` : ''} ${lga ? lga : ''}`}
+                        {heading}
                     </h2>
                 </div>
                 <TopRatedCenterCard

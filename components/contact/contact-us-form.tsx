@@ -35,7 +35,7 @@ const messageSubjects = [
     'Other',
 ];
 type Props = {
-    setIsSubmitted: (isSubmitted: boolean) => void;
+    readonly setIsSubmitted: (isSubmitted: boolean) => void;
 };
 
 export function ContactUsForm({ setIsSubmitted }: Props) {
