@@ -292,7 +292,7 @@ export function AdminDashboard() {
                                                                 </div>
                                                             </div>
                                                         </TableCell>
-                                                        <TableCell>
+                                                        <TableCell className="relative">
                                                             <Badge
                                                                 className={cn(
                                                                     `rounded-full bg-emerald-600`,
@@ -303,6 +303,14 @@ export function AdminDashboard() {
                                                                     ' ',
                                                                 )}
                                                             </Badge>
+                                                            {/* Put a small red dot if user has a center to be confirmed */}
+                                                            {user.diagnosticCentres.find(
+                                                                (centre) =>
+                                                                    centre.status ===
+                                                                    'PENDING_VERIFICATION',
+                                                            ) && (
+                                                                <span className="absolute top-1/2 right-1/2 w-2 h-2 bg-red-600 rounded-full" />
+                                                            )}
                                                         </TableCell>
 
                                                         <TableCell className="text-gray-600 text-sm whitespace-nowrap">
