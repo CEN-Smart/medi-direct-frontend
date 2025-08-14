@@ -7,7 +7,8 @@ import { DiagnosticCenterResponse } from '@/types/diagnostic-center';
 import { format } from 'date-fns';
 import { Calendar, Clock, FileText, MapPin, Phone } from 'lucide-react';
 
-import ConfirmBookingModal from '../confirm-booking-modal';
+import { CompletedBookingModal } from '../completed-booking-modal';
+import { SendTestResultModal } from '../send-test-result-modal';
 import { BookingCardSkeleton } from '../skeletons/booking-card-skeleton';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -21,7 +22,7 @@ type Props = {
     errorMessage?: string;
 };
 
-export function DiagnosticCenterBookingCard({
+export function DiagnosticCenterCompletedCard({
     centers,
     pending,
     isError,
@@ -55,19 +56,12 @@ export function DiagnosticCenterBookingCard({
     return (
         <div className="space-y-4 max-h-[60svh] overflow-y-auto">
             {/* No pending bookings */}
-            {centerBookings?.filter(
-                (booking) =>
-                    booking.status === 'PENDING' ||
-                    booking.status === 'RESCHEDULED',
-            ).length === 0 && (
-                <NoDataFound message="No pending bookings available" />
+            {centerBookings?.filter((booking) => booking.status === 'COMPLETED')
+                .length === 0 && (
+                <NoDataFound message="No bookings has been marked as completed" />
             )}
             {centerBookings
-                ?.filter(
-                    (booking) =>
-                        booking.status === 'PENDING' ||
-                        booking.status === 'RESCHEDULED',
-                )
+                ?.filter((booking) => booking.status === 'COMPLETED')
                 .map((booking) => (
                     <Card key={booking.id}>
                         <CardContent className="p-6">
@@ -159,18 +153,26 @@ export function DiagnosticCenterBookingCard({
                                     </div>
 
                                     <div className="flex gap-2">
-                                        <ConfirmBookingModal booking={booking}>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                disabled={
-                                                    booking.status ===
-                                                    'CONFIRMED'
-                                                }
+                                        {booking.status === 'COMPLETED' ? (
+                                            <SendTestResultModal
+                                                booking={booking}
+                                            />
+                                        ) : (
+                                            <CompletedBookingModal
+                                                booking={booking}
                                             >
-                                                Confirm
-                                            </Button>
-                                        </ConfirmBookingModal>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    disabled={
+                                                        booking.status ===
+                                                        'CONFIRMED'
+                                                    }
+                                                >
+                                                    complete
+                                                </Button>
+                                            </CompletedBookingModal>
+                                        )}
                                     </div>
                                 </div>
                             </div>

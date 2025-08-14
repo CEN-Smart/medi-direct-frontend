@@ -1,4 +1,5 @@
 import { useCreateDiagnosticCenterStore } from '@/stores/diagnostic-center';
+import { useTestResultStore } from '@/stores/guest-booking';
 import type { FileUploadResponse } from '@/types';
 import {
     UseMutationOptions,
@@ -16,11 +17,12 @@ export type UseCase =
     | 'CAC Document'
     | 'Center Logo'
     | 'Center Images'
+    | 'Test Result'
     | null;
 
 export function useFileUpload(
     file: File | File[] | null,
-    useCase: UseCase,
+    useCase?: UseCase,
     options?: UseMutationOptions<
         FileUploadResponse,
         AxiosError & { response?: { data: { message: string } } },
@@ -28,6 +30,7 @@ export function useFileUpload(
     >,
 ) {
     const { setCenterData, centerData } = useCreateDiagnosticCenterStore();
+    const { setResultImageUrl } = useTestResultStore();
     const hash = [fileUploadKeys.create];
     const uploadFile = useMutation({
         mutationKey: hash,
@@ -36,29 +39,38 @@ export function useFileUpload(
             if (data.data.status === 'success') {
                 toast.success('File uploaded successfully');
                 const urls = data.data.data.urls;
-                if (useCase === 'Medical License') {
-                    setCenterData({
-                        ...centerData,
-                        licenseDocument: urls[0],
-                    });
-                }
-                if (useCase === 'CAC Document') {
-                    setCenterData({
-                        ...centerData,
-                        cacDocument: urls[0],
-                    });
-                }
-                if (useCase === 'Center Logo') {
-                    setCenterData({
-                        ...centerData,
-                        logo: urls[0],
-                    });
-                }
-                if (useCase === 'Center Images') {
-                    setCenterData({
-                        ...centerData,
-                        images: [...(centerData.images || []), ...urls],
-                    });
+                if (useCase) {
+                    switch (useCase) {
+                        case 'Medical License':
+                            setCenterData({
+                                ...centerData,
+                                licenseDocument: urls[0],
+                            });
+                            break;
+                        case 'CAC Document':
+                            setCenterData({
+                                ...centerData,
+                                cacDocument: urls[0],
+                            });
+                            break;
+                        case 'Center Logo':
+                            setCenterData({
+                                ...centerData,
+                                logo: urls[0],
+                            });
+                            break;
+                        case 'Center Images':
+                            setCenterData({
+                                ...centerData,
+                                images: [...(centerData.images || []), ...urls],
+                            });
+                            break;
+                        case 'Test Result':
+                            setResultImageUrl(urls[0]);
+                            break;
+                        default:
+                            break;
+                    }
                 }
             } else if (data.data.status === 'fail') {
                 toast.error(data.data.status || 'File upload failed');

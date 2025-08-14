@@ -166,7 +166,7 @@ export function AdminUserActionModal({
                                         {Array.from({ length: 3 }).map(
                                             (_, index: number) => (
                                                 <Card
-                                                    key={index}
+                                                    key={index.toLocaleString()}
                                                     className="mb-4"
                                                 >
                                                     <CardContent className="p-4">
@@ -247,10 +247,8 @@ export function AdminUserActionModal({
                                                                     <picture>
                                                                         <img
                                                                             src={
-                                                                                centre.logo ===
-                                                                                null
-                                                                                    ? '/placeholder-user.jpg'
-                                                                                    : centre.logo
+                                                                                centre.logo ??
+                                                                                '/placeholder-user.jpg'
                                                                             }
                                                                             alt={
                                                                                 centre.name
@@ -339,7 +337,7 @@ export function AdminUserActionModal({
                                                                             ) => (
                                                                                 <div
                                                                                     key={
-                                                                                        index
+                                                                                        image
                                                                                     }
                                                                                     className="flex gap-2 items-center"
                                                                                 >

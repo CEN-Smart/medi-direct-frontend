@@ -58,7 +58,10 @@ export function CreateCenterStep2() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1 w-full">
-                        <label className="text-sm font-medium text-gray-700">
+                        <label
+                            htmlFor="state-select"
+                            className="text-sm font-medium text-gray-700"
+                        >
                             State
                         </label>
                         {isStateError && (
@@ -78,7 +81,7 @@ export function CreateCenterStep2() {
                                 });
                             }}
                         >
-                            <SelectTrigger className="w-full">
+                            <SelectTrigger id="state-select" className="w-full">
                                 <SelectValue placeholder="State" />
                             </SelectTrigger>
                             <SelectContent className="max-h-60 z-[10001] overflow-auto">
@@ -91,7 +94,10 @@ export function CreateCenterStep2() {
                         </Select>
                     </div>
                     <div className="space-y-1 w-full">
-                        <label className="text-sm font-medium text-gray-700">
+                        <label
+                            htmlFor="lga-select"
+                            className="text-sm font-medium text-gray-700"
+                        >
                             LGA
                         </label>
                         {isLGAError && (
@@ -108,7 +114,7 @@ export function CreateCenterStep2() {
                                 });
                             }}
                         >
-                            <SelectTrigger className="w-full">
+                            <SelectTrigger id="lga-select" className="w-full">
                                 <SelectValue placeholder="Select LGA" />
                             </SelectTrigger>
                             <SelectContent className="max-h-60 z-[10001] overflow-auto">

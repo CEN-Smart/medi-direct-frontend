@@ -1,3 +1,11 @@
+export type BookingStatus =
+    | 'PENDING'
+    | 'CONFIRMED'
+    | 'CANCELLED'
+    | 'RESCHEDULE'
+    | 'COMPLETED'
+    | 'NO_SHOW';
+
 export type CreateBookingsPayload = {
     date: string;
     time: string;
@@ -19,7 +27,7 @@ export type CreateBookingsResponse = {
     data: {
         booking: {
             id: number;
-            status: 'PENDING' | 'CONFIRMED' | 'CANCELLED';
+            status: BookingStatus;
             date: string;
             time: string;
             guestFirstName: string;

@@ -2,6 +2,7 @@ const userDashboardTabs = [
     { value: 'bookings', label: 'Bookings' },
     { value: 'centres', label: 'My Centres' },
     { value: 'history', label: 'History' },
+    { value: 'completed', label: 'Completed' },
     { value: 'profile', label: 'Profile' },
 ];
 

@@ -27,7 +27,9 @@ interface CreateCentreModalProps {
     children?: React.ReactNode;
 }
 
-export function CreateCentreModal({ children }: CreateCentreModalProps) {
+export function CreateCentreModal({
+    children,
+}: Readonly<CreateCentreModalProps>) {
     const [isOpen, setIsOpen] = useState(false);
     const [currentStep, setCurrentStep] = useState(1);
 
@@ -194,11 +196,14 @@ export function CreateCentreModal({ children }: CreateCentreModalProps) {
                                 }}
                                 className="bg-green-600 hover:bg-green-700"
                             >
-                                {currentStep === 2
-                                    ? isCreatingLocation
-                                        ? 'Creating Location...'
-                                        : 'Create Location'
-                                    : 'Next'}
+                                {(() => {
+                                    if (currentStep === 2) {
+                                        return isCreatingLocation
+                                            ? 'Creating Location...'
+                                            : 'Create Location';
+                                    }
+                                    return 'Next';
+                                })()}
                             </Button>
                         )}
                     </div>

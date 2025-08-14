@@ -14,6 +14,8 @@ import { cn } from '@/lib/utils';
 import { useDiagnosticCenters } from '@/queries/diagnostic-center/center';
 import { useUserProfile } from '@/queries/user-profile';
 
+import { DiagnosticCenterCompletedCard } from '../diagnostic-center/diagnostic-center-completed-card';
+
 export function UserDashboard() {
     const router = useRouter();
 
@@ -105,6 +107,15 @@ export function UserDashboard() {
                     )}
                     {activeTab === 'history' && (
                         <DiagnosticConfirmedBookingCard
+                            centers={centers}
+                            pending={pendingCenters}
+                            isError={isCenterError}
+                            errorMessage={centerError?.message}
+                        />
+                    )}
+
+                    {activeTab === 'completed' && (
+                        <DiagnosticCenterCompletedCard
                             centers={centers}
                             pending={pendingCenters}
                             isError={isCenterError}

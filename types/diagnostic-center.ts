@@ -82,6 +82,8 @@ export type DiagnosticCenterResponse = {
                 status: BookingStatus;
                 date: string;
                 time: string;
+                resultImageUrl: string;
+                isResultSent: boolean;
                 guestFirstName: string;
                 guestLastName: string;
                 guestPhone: string;

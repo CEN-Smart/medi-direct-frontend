@@ -5,7 +5,7 @@ import { DiagnosticCenterResponse } from '@/types/diagnostic-center';
 import { Calendar, FileText } from 'lucide-react';
 
 import { CancelModal } from '../cancel-booking-modal';
-import ConfirmBookingModal from '../confirm-booking-modal';
+import { CompletedBookingModal } from '../completed-booking-modal';
 import { RescheduleModal } from '../reschedule-modal';
 import { BookingCardSkeleton } from '../skeletons/booking-card-skeleton';
 import { CancelBookingSuccessDialog } from '../success-dialogs/cancel-booking-success-dialog';
@@ -27,7 +27,7 @@ export function DiagnosticConfirmedBookingCard({
     pending,
     isError,
     errorMessage,
-}: Props) {
+}: Readonly<Props>) {
     const centerBookings = useMemo(() => {
         return centers?.data.centres
             .map((centre) => {
@@ -132,18 +132,20 @@ export function DiagnosticConfirmedBookingCard({
                                     </div>
 
                                     <div className="flex gap-2">
-                                        <ConfirmBookingModal booking={booking}>
+                                        <CompletedBookingModal
+                                            booking={booking}
+                                        >
                                             <Button
                                                 variant="outline"
                                                 size="sm"
                                                 disabled={
                                                     booking.status ===
-                                                    'CONFIRMED'
+                                                    'COMPLETED'
                                                 }
                                             >
-                                                Confirm
+                                                Complete
                                             </Button>
-                                        </ConfirmBookingModal>
+                                        </CompletedBookingModal>
                                         <RescheduleModal booking={booking}>
                                             <Button
                                                 variant="outline"
