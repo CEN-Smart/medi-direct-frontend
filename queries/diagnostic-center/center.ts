@@ -107,7 +107,7 @@ export const useConfirmBooking = (
     const queryClient = useQueryClient();
     const hash = [bookingsKeys.patch, id];
     return useMutation({
-        mutationFn: () => confirmBooking(id ? id : undefined),
+        mutationFn: () => confirmBooking(id),
         mutationKey: hash,
         onSuccess: (data) => {
             if (data.status === 'success') {
@@ -117,12 +117,61 @@ export const useConfirmBooking = (
                 if (setIsOpen) {
                     setIsOpen(false);
                 }
-                toast.success(data.message);
+                toast.success('Booking confirmed');
             }
         },
         onError: (error) => {
             toast.error(
                 error.response?.data.message || 'Failed to confirm booking',
+            );
+        },
+        ...options,
+    });
+};
+
+// Complete bookings
+export const completeBooking = async (
+    id?: number,
+): Promise<GenericResponse<void>> => {
+    const response = await apiClient.patch({
+        url: `/bookings/${id}/complete`,
+        body: {},
+    });
+    return response;
+};
+
+export const useCompleteBooking = (
+    id?: number,
+    setIsOpen?: (open: boolean) => void,
+    options?: Omit<
+        UseMutationOptions<
+            GenericResponse<void>,
+            ErrorResponse,
+            number,
+            unknown
+        >,
+        'mutationFn' | 'mutationKey'
+    >,
+) => {
+    const queryClient = useQueryClient();
+    const hash = [bookingsKeys.patch, id];
+    return useMutation({
+        mutationFn: () => completeBooking(id),
+        mutationKey: hash,
+        onSuccess: (data) => {
+            if (data.status === 'success') {
+                allKeysToValidate.forEach((key) => {
+                    queryClient.invalidateQueries({ queryKey: [key] });
+                });
+                if (setIsOpen) {
+                    setIsOpen(false);
+                }
+                toast.success('Booking completed');
+            }
+        },
+        onError: (error) => {
+            toast.error(
+                error.response?.data.message || 'Failed to complete booking',
             );
         },
         ...options,
@@ -414,7 +463,7 @@ export const useService = (
     );
     return useQuery({
         queryKey: hash,
-        queryFn: () => getService(centerId, serviceId ? serviceId : undefined),
+        queryFn: () => getService(centerId, serviceId),
         ...options,
     });
 };
@@ -519,6 +568,66 @@ export const useCreateDiagnosticCenter = (
             toast.error(
                 error.response?.data.message ||
                     'Failed to create diagnostic center',
+            );
+        },
+        ...options,
+    });
+};
+
+type ResultImageUrl = {
+    resultImageUrl: string;
+};
+// Send Result /bookings/2/test-result {"resultImageUrl"}
+export const sendTestResult = async (
+    bookingId: number,
+    payload: ResultImageUrl,
+): Promise<GenericResponse<void>> => {
+    const response = await apiClient.post({
+        url: `/bookings/${bookingId}/test-result`,
+        body: payload,
+        auth: true,
+    });
+    return response;
+};
+
+export const useSendTestResult = (
+    bookingId?: number,
+    setIsOpen?: (open: boolean) => void,
+    options?: Omit<
+        UseMutationOptions<
+            GenericResponse<void>,
+            ErrorResponse,
+            ResultImageUrl,
+            unknown
+        >,
+        'mutationFn' | 'mutationKey'
+    >,
+) => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (payload: ResultImageUrl) => {
+            if (typeof bookingId !== 'number') {
+                return Promise.reject(
+                    new Error('Booking ID is required to send test result'),
+                );
+            }
+            return sendTestResult(bookingId, payload);
+        },
+        mutationKey: [bookingsKeys.read],
+        onSuccess: (data) => {
+            if (data.status === 'success') {
+                allKeysToValidate.forEach((key) => {
+                    queryClient.invalidateQueries({ queryKey: [key] });
+                });
+                toast.success(data.message);
+                if (setIsOpen) {
+                    setIsOpen(false);
+                }
+            }
+        },
+        onError: (error) => {
+            toast.error(
+                error.response?.data.message || 'Failed to send test result',
             );
         },
         ...options,

@@ -12,11 +12,11 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import { useConfirmBooking } from '@/queries/diagnostic-center/center';
+import { useCompleteBooking } from '@/queries/diagnostic-center/center';
 import { DiagnosticCenterResponse } from '@/types/diagnostic-center';
 import { Calendar, FileText, MapPin, Phone } from 'lucide-react';
 
-interface ConfirmBookingModalProps {
+interface CompletedBookingModalProps {
     booking:
         | (DiagnosticCenterResponse['data']['centres'][number]['bookings'][number] & {
               centreName: string;
@@ -25,30 +25,30 @@ interface ConfirmBookingModalProps {
     children?: React.ReactNode;
 }
 
-export default function ConfirmBookingModal({
+export function CompletedBookingModal({
     booking,
     children,
-}: Readonly<ConfirmBookingModalProps>) {
+}: Readonly<CompletedBookingModalProps>) {
     const [isOpen, setIsOpen] = useState(false);
 
-    const { mutate: confirmBooking, isPending: pendingConfirm } =
-        useConfirmBooking(booking?.id, setIsOpen);
+    const { mutate: completeBooking, isPending: pendingComplete } =
+        useCompleteBooking(booking?.id, setIsOpen);
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 {children || (
                     <Button variant="outline" size="sm">
-                        Confirm Booking
+                        Confirm Completion
                     </Button>
                 )}
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                    <DialogTitle>Confirm Booking</DialogTitle>
+                    <DialogTitle>Confirm Completion</DialogTitle>
                     <DialogDescription>
-                        Please review the details below and confirm your
-                        appointment.
+                        Please review the details below and confirm that you
+                        want to complete this booking.
                     </DialogDescription>
                 </DialogHeader>
 
@@ -101,13 +101,13 @@ export default function ConfirmBookingModal({
                         onClick={(e) => {
                             e.preventDefault();
                             if (booking?.id !== undefined) {
-                                confirmBooking(booking.id);
+                                completeBooking(booking.id);
                             }
                         }}
-                        disabled={pendingConfirm}
+                        disabled={pendingComplete}
                         className="bg-blue-600 text-white hover:bg-blue-700"
                     >
-                        {pendingConfirm ? 'Confirming...' : 'Confirm Booking'}
+                        {pendingComplete ? 'Completing...' : 'Complete Booking'}
                     </Button>
                 </DialogFooter>
             </DialogContent>

@@ -278,16 +278,15 @@ export function CreateCenterStep4() {
                                 />
                             </picture>
                         )}
-                        {centerData.images &&
-                            centerData.images.map((image, index) => (
-                                <picture key={index}>
-                                    <img
-                                        src={image}
-                                        alt={`Centre Image ${index + 1} Preview`}
-                                        className="w-full object-cover"
-                                    />
-                                </picture>
-                            ))}
+                        {centerData.images?.map((image) => (
+                            <picture key={image}>
+                                <img
+                                    src={image}
+                                    alt="Centre facility"
+                                    className="w-full object-cover"
+                                />
+                            </picture>
+                        ))}
                     </CardFooter>
                 </Card>
 
@@ -360,7 +359,7 @@ export function CreateCenterStep4() {
                                 emergencyPhone: formattedPhone,
                             });
                         }}
-                        placeholder="+234 801 234 5678"
+                        placeholder="+234 800 000 0000"
                     />
                 </div>
             </div>

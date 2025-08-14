@@ -96,3 +96,16 @@ export const useCancelBookingStore = create<CancelBookingActions>((set) => ({
             },
         }),
 }));
+
+// Test Result
+export type TestResult = {
+    resultImageUrl: string;
+    setResultImageUrl: (url: string) => void;
+    clearAll: () => void;
+};
+
+export const useTestResultStore = create<TestResult>((set) => ({
+    resultImageUrl: '',
+    setResultImageUrl: (url) => set({ resultImageUrl: url }),
+    clearAll: () => set({ resultImageUrl: '' }),
+}));
