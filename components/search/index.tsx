@@ -77,17 +77,27 @@ export function GuestSearchPage() {
                     <h1 className="mb-2 font-bold text-gray-900 text-3xl flex items-center gap-2">
                         Diagnostic Centres
                     </h1>
-                    {pendingCentres ? (
-                        <Skeleton className="h-6 w-64 bg-gray-200" />
-                    ) : isCentresError ? (
-                        <p className="text-red-500">{errorCentres.message}</p>
-                    ) : (
-                        <p className="text-gray-600">
-                            {`${centres?.total && centres.total > 0 ? centres.total : 0} results found`}
-                            {state && ` in ${state}`}
-                            {serviceType && ` for ${serviceType}`}
-                        </p>
-                    )}
+                    {(() => {
+                        if (pendingCentres) {
+                            return (
+                                <Skeleton className="h-6 w-64 bg-gray-200" />
+                            );
+                        }
+                        if (isCentresError) {
+                            return (
+                                <p className="text-red-500">
+                                    {errorCentres.message}
+                                </p>
+                            );
+                        }
+                        return (
+                            <p className="text-gray-600">
+                                {`${centres?.total && centres.total > 0 ? centres.total : 0} results found`}
+                                {state && ` in ${state}`}
+                                {serviceType && ` for ${serviceType}`}
+                            </p>
+                        );
+                    })()}
                 </div>
 
                 <div className="gap-6 grid grid-cols-1 lg:grid-cols-4">
@@ -102,7 +112,10 @@ export function GuestSearchPage() {
 
                                 <div className="grid grid-cols-1 gap-4">
                                     <div className="space-y-1">
-                                        <label className="text-sm font-medium text-gray-700">
+                                        <label
+                                            className="text-sm font-medium text-gray-700"
+                                            htmlFor="test-type-select"
+                                        >
                                             Test Type
                                         </label>
                                         {isServiceError && (
@@ -117,7 +130,10 @@ export function GuestSearchPage() {
                                                 setServiceType(value)
                                             }
                                         >
-                                            <SelectTrigger className="w-full">
+                                            <SelectTrigger
+                                                className="w-full"
+                                                id="test-type-select"
+                                            >
                                                 <SelectValue placeholder="Select test type" />
                                             </SelectTrigger>
                                             <SelectContent className="max-h-60 overflow-y-auto z-[1500]">
@@ -137,7 +153,10 @@ export function GuestSearchPage() {
                                     </div>
 
                                     <div className="space-y-1">
-                                        <label className="text-sm font-medium text-gray-700">
+                                        <label
+                                            className="text-sm font-medium text-gray-700"
+                                            htmlFor="state-select"
+                                        >
                                             State
                                         </label>
                                         {isStateError && (
@@ -152,7 +171,10 @@ export function GuestSearchPage() {
                                             }
                                             disabled={pendingStates}
                                         >
-                                            <SelectTrigger className="w-full">
+                                            <SelectTrigger
+                                                className="w-full"
+                                                id="state-select"
+                                            >
                                                 <SelectValue placeholder="State" />
                                             </SelectTrigger>
                                             <SelectContent>
