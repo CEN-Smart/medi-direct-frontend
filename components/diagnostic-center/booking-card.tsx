@@ -81,7 +81,7 @@ export function DiagnosticCenterBookingCard({
 
                                         <Badge
                                             className={cn(
-                                                `'px-2 py-1 text-white rounded-full text-xs font-semibold`,
+                                                `py-1 rounded-full font-semibold text-white text-xs 'px-2`,
                                                 {
                                                     'bg-red-500':
                                                         booking.status ===
@@ -122,7 +122,8 @@ export function DiagnosticCenterBookingCard({
                                         <div className="flex items-center gap-2">
                                             <Calendar className="w-4 h-4" />
                                             <span>
-                                                {booking.date} at {booking.time}
+                                                {format(booking.date, 'PP')} at{' '}
+                                                {booking.time}
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-2">
