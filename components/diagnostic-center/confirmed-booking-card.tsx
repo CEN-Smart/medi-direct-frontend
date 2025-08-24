@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 
 import { cn } from '@/lib/utils';
 import { DiagnosticCenterResponse } from '@/types/diagnostic-center';
+import { format } from 'date-fns';
 import { Calendar, FileText } from 'lucide-react';
 
 import { CancelModal } from '../cancel-booking-modal';
@@ -82,7 +83,7 @@ export function DiagnosticConfirmedBookingCard({
                                         </h3>
                                         <Badge
                                             className={cn(
-                                                'px-2 py-1 text-white rounded-full text-xs font-semibold',
+                                                'px-2 py-1 rounded-full font-semibold text-white text-xs',
                                                 {
                                                     'bg-green-500':
                                                         booking.status ===
@@ -106,23 +107,23 @@ export function DiagnosticConfirmedBookingCard({
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <Calendar className="w-4 h-4" />
-                                            <span>{booking.date}</span>
+                                            <span>
+                                                {format(booking.date, 'PP')} at{' '}
+                                                {booking.time}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="flex flex-col items-end gap-3">
                                     <div className="text-right">
-                                        <p className="font-bold text-xl text-emerald-500">
+                                        <p className="font-bold text-emerald-500 text-xl">
                                             ₦
                                             {Number(
                                                 booking.servicePrice,
                                             ).toLocaleString()}
                                         </p>
-                                        <p
-                                            className="text-gray-500
-												text-sm capitalize"
-                                        >
+                                        <p className="text-gray-500 text-sm capitalize">
                                             ID: {booking.centreName} -{' '}
                                             {booking.id
                                                 .toString()

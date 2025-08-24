@@ -5,28 +5,28 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export default function FAQLoading() {
     return (
-        <div className="min-h-screen bg-white">
+        <div className="bg-white min-h-screen">
             <Header />
 
             <div className="bg-gradient-to-br from-blue-50 via-white to-purple-50">
                 {/* Hero Section Skeleton */}
-                <section className="py-20 px-4">
-                    <div className="max-w-4xl mx-auto text-center">
-                        <Skeleton className="w-16 h-16 rounded-full mx-auto mb-6" />
-                        <Skeleton className="h-12 w-96 mx-auto mb-6" />
-                        <Skeleton className="h-6 w-80 mx-auto mb-8" />
-                        <Skeleton className="h-12 w-full max-w-2xl mx-auto rounded-xl" />
+                <section className="px-4 py-20">
+                    <div className="mx-auto max-w-4xl text-center">
+                        <Skeleton className="mx-auto mb-6 rounded-full w-16 h-16" />
+                        <Skeleton className="mx-auto mb-6 w-96 h-12" />
+                        <Skeleton className="mx-auto mb-8 w-80 h-6" />
+                        <Skeleton className="mx-auto rounded-xl w-full max-w-2xl h-12" />
                     </div>
                 </section>
 
                 {/* Category Filter Skeleton */}
-                <section className="py-8 px-4 border-b border-gray-200">
-                    <div className="max-w-6xl mx-auto">
-                        <div className="flex flex-wrap gap-3 justify-center">
+                <section className="px-4 py-8 border-gray-200 border-b">
+                    <div className="mx-auto max-w-6xl">
+                        <div className="flex flex-wrap justify-center gap-3">
                             {Array.from({ length: 9 }).map((_, index) => (
                                 <Skeleton
                                     key={index}
-                                    className="h-10 w-32 rounded-full"
+                                    className="rounded-full w-32 h-10"
                                 />
                             ))}
                         </div>
@@ -34,28 +34,28 @@ export default function FAQLoading() {
                 </section>
 
                 {/* FAQ Items Skeleton */}
-                <section className="py-12 px-4">
-                    <div className="max-w-4xl mx-auto space-y-4">
+                <section className="px-4 py-12">
+                    <div className="space-y-4 mx-auto max-w-4xl">
                         {Array.from({ length: 8 }).map((_, index) => (
                             <Card
                                 key={index}
                                 className="border-l-4 border-l-blue-500"
                             >
                                 <CardContent className="p-6">
-                                    <div className="flex items-start justify-between gap-4">
+                                    <div className="flex justify-between items-start gap-4">
                                         <div className="flex-1">
                                             <div className="flex items-center gap-3 mb-2">
-                                                <Skeleton className="w-8 h-8 rounded-full" />
-                                                <Skeleton className="h-5 w-20 rounded-full" />
+                                                <Skeleton className="rounded-full w-8 h-8" />
+                                                <Skeleton className="rounded-full w-20 h-5" />
                                             </div>
-                                            <Skeleton className="h-6 w-full mb-2" />
+                                            <Skeleton className="mb-2 w-full h-6" />
                                             <div className="flex gap-2">
-                                                <Skeleton className="h-5 w-16 rounded-full" />
-                                                <Skeleton className="h-5 w-20 rounded-full" />
-                                                <Skeleton className="h-5 w-14 rounded-full" />
+                                                <Skeleton className="rounded-full w-16 h-5" />
+                                                <Skeleton className="rounded-full w-20 h-5" />
+                                                <Skeleton className="rounded-full w-14 h-5" />
                                             </div>
                                         </div>
-                                        <Skeleton className="w-5 h-5 flex-shrink-0" />
+                                        <Skeleton className="flex-shrink-0 w-5 h-5" />
                                     </div>
                                 </CardContent>
                             </Card>
@@ -64,14 +64,14 @@ export default function FAQLoading() {
                 </section>
 
                 {/* Contact Support Section Skeleton */}
-                <section className="py-16 px-4 bg-gradient-to-r from-blue-600 to-purple-600">
-                    <div className="max-w-4xl mx-auto text-center">
-                        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
-                            <Skeleton className="h-8 w-64 mx-auto mb-4 bg-white/20" />
-                            <Skeleton className="h-6 w-96 mx-auto mb-6 bg-white/20" />
-                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                <Skeleton className="h-12 w-40 bg-white/20" />
-                                <Skeleton className="h-12 w-32 bg-white/20" />
+                <section className="bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-16">
+                    <div className="mx-auto max-w-4xl text-center">
+                        <div className="bg-white/10 backdrop-blur-sm p-8 rounded-2xl">
+                            <Skeleton className="bg-white/20 mx-auto mb-4 w-64 h-8" />
+                            <Skeleton className="bg-white/20 mx-auto mb-6 w-96 h-6" />
+                            <div className="flex sm:flex-row flex-col justify-center gap-4">
+                                <Skeleton className="bg-white/20 w-40 h-12" />
+                                <Skeleton className="bg-white/20 w-32 h-12" />
                             </div>
                         </div>
                     </div>
