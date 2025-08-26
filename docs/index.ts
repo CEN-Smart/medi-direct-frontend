@@ -1,6 +1,6 @@
 const userDashboardTabs = [
-    { value: 'bookings', label: 'Bookings' },
     { value: 'centres', label: 'My Centres' },
+    { value: 'bookings', label: 'Bookings' },
     { value: 'history', label: 'History' },
     { value: 'completed', label: 'Completed' },
     { value: 'profile', label: 'Profile' },
@@ -102,11 +102,11 @@ const resultDeliveryTimes = [
 export {
     adminDashboardTabs,
     ageRanges,
+    amenities,
     genderOptions,
     links,
     ratings,
     resultDeliveryTimes,
     reviewCategories,
     userDashboardTabs,
-    amenities,
 };
