@@ -36,7 +36,7 @@ export function DiagnosticCenterCard({
     isError,
     errorMessage,
     setPageNumber,
-}: Props) {
+}: Readonly<Props>) {
     const centersWithBookingsReviewsAndServices = useMemo(() => {
         const allData = centers?.data.centres.flatMap((center) => {
             return {
@@ -54,7 +54,7 @@ export function DiagnosticCenterCard({
             <div className="space-y-4">
                 <div className="flex justify-between items-center">
                     <div>
-                        <h2 className="text-2xl font-bold text-gray-900">
+                        <h2 className="font-bold text-gray-900 text-2xl">
                             My Diagnostic Centres
                         </h2>
                         <p className="text-gray-600">
@@ -63,7 +63,7 @@ export function DiagnosticCenterCard({
                     </div>
                     <CreateCentreModal>
                         <Button className="bg-green-600 hover:bg-green-700">
-                            <Plus className="w-4 h-4 mr-2" />
+                            <Plus className="mr-2 w-4 h-4" />
                             Add New Centre
                         </Button>
                     </CreateCentreModal>
@@ -84,11 +84,10 @@ export function DiagnosticCenterCard({
                     </Card>
                 )}
                 {pending && <DiagnosticCenterCardSkeleton />}
-                <div className="max-h-[60svh] overflow-y-auto space-y-4">
+                <div className="space-y-4 max-h-[60svh] overflow-y-auto">
                     {!pending &&
                         !isError &&
-                        centersWithBookingsReviewsAndServices &&
-                        centersWithBookingsReviewsAndServices.map((center) => (
+                        centersWithBookingsReviewsAndServices?.map((center) => (
                             <Card key={center.id}>
                                 <CardContent className="p-6">
                                     <div className="flex lg:flex-row flex-col justify-between lg:items-center gap-6">
@@ -99,7 +98,7 @@ export function DiagnosticCenterCard({
                                                 </h3>
                                                 <div
                                                     className={cn(
-                                                        `px-2 py-1 text-white rounded-full text-xs font-semibold`,
+                                                        `px-2 py-1 rounded-full font-semibold text-white text-xs`,
                                                         {
                                                             'bg-emerald-500':
                                                                 center.status ===
@@ -131,7 +130,7 @@ export function DiagnosticCenterCard({
                                                 </span>
                                             </div>
 
-                                            <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 text-sm">
+                                            <div className="gap-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 text-sm">
                                                 <div className="flex items-center gap-2">
                                                     <FileText className="w-4 h-4 text-blue-500" />
                                                     <span>
@@ -196,7 +195,7 @@ export function DiagnosticCenterCard({
                 </div>
             </div>
             {centersWithBookingsReviewsAndServices?.length > 0 && (
-                <div className="mt-6 flex justify-end ">
+                <div className="flex justify-end mt-6">
                     <Pagination
                         currentPage={centers?.metaData.currentPage ?? 1}
                         totalPages={centers?.metaData.totalPages ?? 1}

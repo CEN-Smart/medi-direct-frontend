@@ -76,7 +76,7 @@ export function UserDashboard() {
                                     key={tab.value}
                                     onClick={() => handleTabChange(tab.value)}
                                     className={cn(
-                                        `px-4 py-2 rounded-md cursor-pointer bg-gray-200 text-gray-700`,
+                                        `bg-gray-200 px-4 py-2 rounded-md text-gray-700 cursor-pointer`,
                                         {
                                             'bg-blue-500 text-white':
                                                 activeTab === tab.value,
@@ -88,14 +88,6 @@ export function UserDashboard() {
                             ))}
                         </div>
                     </div>
-                    {activeTab === 'bookings' && (
-                        <DiagnosticCenterBookingCard
-                            centers={centers}
-                            pending={pendingCenters}
-                            isError={isCenterError}
-                            errorMessage={centerError?.message}
-                        />
-                    )}
                     {activeTab === 'centres' && (
                         <DiagnosticCenterCard
                             setPageNumber={setPageNumber}
@@ -105,6 +97,15 @@ export function UserDashboard() {
                             errorMessage={centerError?.message}
                         />
                     )}
+                    {activeTab === 'bookings' && (
+                        <DiagnosticCenterBookingCard
+                            centers={centers}
+                            pending={pendingCenters}
+                            isError={isCenterError}
+                            errorMessage={centerError?.message}
+                        />
+                    )}
+
                     {activeTab === 'history' && (
                         <DiagnosticConfirmedBookingCard
                             centers={centers}
