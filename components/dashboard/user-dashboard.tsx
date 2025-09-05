@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils';
 import { useDiagnosticCenters } from '@/queries/diagnostic-center/center';
 import { useUserProfile } from '@/queries/user-profile';
 
+import { LoadingAnimation } from '../animations/loading-animation';
 import { DiagnosticCenterCompletedCard } from '../diagnostic-center/diagnostic-center-completed-card';
 
 export function UserDashboard() {
@@ -48,6 +49,10 @@ export function UserDashboard() {
             router.push('/admin/dashboard');
         }
     }, [user, router]);
+
+    if (!user || pendingUser) {
+        return <LoadingAnimation />;
+    }
 
     return (
         <div className="bg-gray-50 min-h-screen">
