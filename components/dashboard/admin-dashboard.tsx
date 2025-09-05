@@ -154,7 +154,7 @@ export function AdminDashboard() {
                                     key={tab.value}
                                     onClick={() => handleTabChange(tab.value)}
                                     className={cn(
-                                        `px-4 py-2 rounded-md cursor-pointer bg-gray-200 text-gray-700`,
+                                        `bg-gray-200 px-4 py-2 rounded-md text-gray-700 cursor-pointer`,
                                         {
                                             'bg-blue-500 text-white':
                                                 activeTab === tab.value,
@@ -167,7 +167,7 @@ export function AdminDashboard() {
                         </div>
                     </div>
                     {activeTab === 'users' && (
-                        <>
+                        <div className="py-6">
                             {/* Filters and Actions */}
                             <Card className="mb-6">
                                 <CardContent className="p-6">
@@ -175,7 +175,7 @@ export function AdminDashboard() {
                                         <div className="flex sm:flex-row flex-col flex-1 gap-4">
                                             <div className="relative flex-1 max-w-md">
                                                 <SearchInput
-                                                    className=" focus:border-blue-500 focus:ring-blue-500"
+                                                    className="focus:border-blue-500 focus:ring-blue-500"
                                                     inputClassName="border-blue-300 ring-2 ring-blue-300 focus:border-blue-500 focus:ring-blue-500"
                                                     searchText={searchText}
                                                     setSearchText={
@@ -295,7 +295,7 @@ export function AdminDashboard() {
                                                         <TableCell className="relative">
                                                             <Badge
                                                                 className={cn(
-                                                                    `rounded-full bg-emerald-600`,
+                                                                    `bg-emerald-600 rounded-full`,
                                                                 )}
                                                             >
                                                                 {user.role.replace(
@@ -309,7 +309,7 @@ export function AdminDashboard() {
                                                                     centre.status ===
                                                                     'PENDING_VERIFICATION',
                                                             ) && (
-                                                                <span className="absolute top-1/2 right-1/2 w-2 h-2 bg-red-600 rounded-full" />
+                                                                <span className="top-1/2 right-1/2 absolute bg-red-600 rounded-full w-2 h-2" />
                                                             )}
                                                         </TableCell>
 
@@ -328,7 +328,7 @@ export function AdminDashboard() {
                                                                     user
                                                                 }
                                                             >
-                                                                <div className="flex items-center text-blue-600 hover:text-blue-800 cursor-pointer whitespace-nowrap">
+                                                                <div className="flex items-center text-blue-600 hover:text-blue-800 whitespace-nowrap cursor-pointer">
                                                                     <Eye className="mr-2 w-4 h-4" />
                                                                     View Details
                                                                 </div>
@@ -344,7 +344,7 @@ export function AdminDashboard() {
 
                             {/* Pagination */}
                             {allUsers && allUsers?.data.users.length > 0 && (
-                                <div className="flex items-center justify-end py-4">
+                                <div className="flex justify-end items-center py-4">
                                     <Pagination
                                         currentPage={
                                             allUsers?.metaData.currentPage || 1
@@ -359,7 +359,7 @@ export function AdminDashboard() {
                                     />
                                 </div>
                             )}
-                        </>
+                        </div>
                     )}
                     {activeTab === 'profile' && (
                         <UserProfileTab
